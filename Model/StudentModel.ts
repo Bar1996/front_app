@@ -1,10 +1,16 @@
 import StudentApi from "../api/StudentApi";
+import FormData from "form-data";
 
 export type Student = {
   name: string;
   id: string;
   imgUrl: string;
 };
+
+interface UploadImageResponse {
+  message: string;
+  url: string;
+}
 
 const students: Student[] = [];
 
@@ -14,11 +20,10 @@ const getAllStudents = async () => {
   let students = Array<Student>();
   if (res.data) {
     res.data.forEach((obj: any) => {
-      console.log("element: " + obj._id);
       const st: Student = {
         name: obj.name,
         id: obj._id,
-        imgUrl: "",
+        imgUrl: obj.imgUrl,
       };
       students.push(st);
     });
@@ -30,17 +35,17 @@ const getStudent = (id: string): Student | undefined => {
   return students.find((student) => student.id == id);
 };
 
-const addStudent = (student: Student) => {
-    const data = {
-        _id: student.id,
-        name: student.name, 
-        imgUrl: student.imgUrl
-    }
-    try{
-        const res = StudentApi.addStudent(data)
-    }catch(err){
-        console.log("fail adding student " + err)
-    }
+const addStudent = async (student: Student) => {
+  const data = {
+    _id: student.id,
+    name: student.name,
+    imgUrl: student.imgUrl,
+  };
+  try {
+    const res = StudentApi.addStudent(data);
+  } catch (err) {
+    console.log("fail adding student " + err);
+  }
 };
 
 const deleteStudent = (id: string) => {
@@ -50,4 +55,39 @@ const deleteStudent = (id: string) => {
   }
 };
 
-export default { getAllStudents, getStudent, addStudent, deleteStudent };
+const uploadImage = async (imageUri: string): Promise<string> => {
+  try {
+    const formData = new FormData();
+    const uriParts = imageUri.split(".");
+    const fileType = uriParts[uriParts.length - 1];
+    const filename = "photo" + Date.now().toString() + "." + fileType;
+
+    formData.append("file", {
+      uri: imageUri,
+      type: `image/${fileType}`,
+      name: filename,
+    });
+
+    const res = await StudentApi.uploadImage(formData);
+    const data = res.data as UploadImageResponse;
+
+    if (data.message !== "Uploaded successfully") {
+      console.log("save failed " + res.problem);
+    } else {
+      console.log("save passed");
+      const url = data.url;
+      return url;
+    }
+  } catch (err) {
+    console.log("save failed " + err);
+  }
+  return "";
+};
+
+export default {
+  getAllStudents,
+  getStudent,
+  addStudent,
+  deleteStudent,
+  uploadImage,
+};
