@@ -2,6 +2,7 @@
   "expo": {
     "name": "front_app",
     "slug": "front_app",
+    "scheme": "com.bar3668.front_app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,10 +22,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.bar3668.front_app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8900420e-0733-45dd-9426-d9feb7118c3e"
+      }
     }
   }
 }

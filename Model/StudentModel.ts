@@ -72,7 +72,7 @@ const uploadImage = async (imageUri: string): Promise<string> => {
     const data = res.data as UploadImageResponse;
 
     if (data.message !== "Uploaded successfully") {
-      console.log("save failed " + res.problem);
+      console.log("save failed " + res.status); //TODO
     } else {
       console.log("save passed");
       const url = data.url;

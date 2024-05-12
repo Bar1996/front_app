@@ -7,6 +7,7 @@ import StudentDetailsPage from './Components/StudentDetailsPage';
 import StudentListPage from './Components/StudentListPage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AddNewPost from './Components/AddNewPost';
+import GoogleSigninComp from './Components/GoogleSigninComp';
 
 // const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,7 +23,13 @@ const StudentsListScreen: FC = () => {
   );
 }
 
+
+
+
 export default function App() {
+
+ 
+
   return (
     <NavigationContainer>
       <Tab.Navigator>
@@ -30,14 +37,34 @@ export default function App() {
         <Tab.Screen name="StudentAddPage" component={StudentAddPage} options={{ title: 'Add New Student' }} />
       </Tab.Navigator>
     </NavigationContainer >
-  );
+//     <View style={styles.container}>
+// <View style={styles.container}>
+     
+//       <GoogleSigninComp />
+//     </View>
+//   </View>
+);
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: StatusBar.currentHeight,
     flex: 1,
-    flexDirection: 'column',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
-
+  text: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  card: {
+    borderWidth: 1,
+    borderRadius: 15,
+    padding: 15,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+  },
 });

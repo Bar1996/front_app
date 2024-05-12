@@ -1,7 +1,8 @@
-import { create } from "apisauce";
+import axios from "axios";
+import { SERVER_URL } from '../core/config';
 
-const apiClient = create({
-  baseURL: "http://10.100.102.25:3000",
+const apiClient = axios.create({
+  baseURL: SERVER_URL,
   headers: { Accept: "application/vnd.github.v3+json" },
 });
 
