@@ -31,18 +31,18 @@ export default function App() {
  
 
   return (
-    <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="StudentsListScreen" component={StudentsListScreen} options={{ headerShown: false }} />
-        <Tab.Screen name="StudentAddPage" component={StudentAddPage} options={{ title: 'Add New Student' }} />
-      </Tab.Navigator>
-    </NavigationContainer >
-//     <View style={styles.container}>
-// <View style={styles.container}>
+    // <NavigationContainer>
+    //   <Tab.Navigator>
+    //     <Tab.Screen name="StudentsListScreen" component={StudentsListScreen} options={{ headerShown: false }} />
+    //     <Tab.Screen name="StudentAddPage" component={StudentAddPage} options={{ title: 'Add New Student' }} />
+    //   </Tab.Navigator>
+    // </NavigationContainer >
+    <View style={styles.container}>
+<View style={styles.container}>
      
-//       <GoogleSigninComp />
-//     </View>
-//   </View>
+      <GoogleSigninComp />
+    </View>
+  </View>
 );
 }
 

@@ -8,6 +8,7 @@ import { View, Text, StyleSheet, Button } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from 'expo-web-browser';
 import { CLIENT_ID } from '../core/config';
+import UserModel from '../Model/UserModel';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -25,7 +26,11 @@ export default function GoogleSigninComp() {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      console.log(userInfo.idToken);
+      console.log('Sign-in successful');
+      const credentialResponse = userInfo.idToken;
+      await UserModel.SignInWithGoogle(credentialResponse);
+      
+      
       // You can now use this userInfo object to authenticate the user in your backend
     } catch (error: any) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
