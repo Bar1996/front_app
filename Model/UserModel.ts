@@ -6,7 +6,7 @@ export interface IUser {
     email: string;
     _id?: string;
     password?: string;
-    imageUrl?: string;
+    imgUrl?: string;
     accsessToken?: string;
     refreshToken?: string;
     }
@@ -29,6 +29,7 @@ export interface IUser {
         try{
         const response = await apiClient.post("/auth/google", data);
         console.log("response: " + response.data.accessToken);
+
         
         return response;
         }catch(err){

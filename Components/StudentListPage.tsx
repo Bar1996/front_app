@@ -30,7 +30,7 @@ const StudentListPage: FC<{ navigation: any }> = ({ navigation }) => {
         navigation.setOptions({
             headerRight: () => (
                 <Button
-                    onPress={() => navigation.navigate('StudentAddPage')}
+                    onPress={() => navigation.navigate('Register')}
                     title="Add"
                 />
             ),
