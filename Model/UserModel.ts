@@ -1,4 +1,5 @@
 import apiClient from "../api/ClientApi";
+import { setToken, removeToken } from '../api/tokenStorage';
 
 
 export interface IUser {
@@ -29,6 +30,7 @@ export interface IUser {
         try{
         const response = await apiClient.post("/auth/google", data);
         console.log("response: " + response.data.accessToken);
+        await setToken(response.data.accessToken, response.data.refreshToken);
 
         
         return response;
@@ -38,5 +40,52 @@ export interface IUser {
          
     }
 
+    const Login = async (email: string, password: string) => {
+        const data = {
+            email: email,
+            password: password
+        };
+        try{
+        const response = await apiClient.post("/auth/login", data);
+        console.log("response: " + response.data.message);
+        await setToken(response.data.accessToken, response.data.refreshToken);
+      
 
-    export default { registerUser, SignInWithGoogle };
+        
+        return response;
+        }catch(err){
+        console.log("Login fail " + err);
+        }
+         
+    }
+
+    const Logout = async () => {
+        try{
+        await removeToken()
+        }catch(err){
+        console.log("Loguot fail " + err);
+        }
+    }
+
+    const Check = async () => {
+        try{
+        // console.log("Check Button Pressed",await getToken());
+        const response = await apiClient.get("/post");
+        console.log("response here: " + response.data);
+        return response.data;
+        }catch(err: any){
+        console.log("fail checking user " + err);
+        console.log("fail checking user " + err.response.data);
+        
+        }
+         
+    }
+    function delayAction() {
+        console.log("Action will be performed after 3 seconds.");
+      }
+      
+      // Wait for 3000 milliseconds before executing the function
+      
+
+
+    export default { registerUser, SignInWithGoogle, Login, Logout, Check};

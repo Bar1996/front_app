@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Button, Alert, TextInput, StatusBar } from 'react-native';
+import { StyleSheet, KeyboardAvoidingView } from 'react-native';
 import React, { useState, FC } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -8,10 +8,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AddNewPost from './Components/AddNewPost';
 import GoogleSigninComp from './Components/GoogleSigninComp';
 import Register from './Components/Register';
+import Login from './Components/Login';
+import Home from './Components/Home';
 
 // const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const StudentsListStack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
 
 const StudentsListScreen: FC = () => {
   return (
@@ -26,17 +29,34 @@ const StudentsListScreen: FC = () => {
 
 
 
+
 export default function App() {
 
  
 
   return (
+   
     <NavigationContainer>
-      <Tab.Navigator>
-        <Tab.Screen name="StudentsListScreen" component={StudentsListScreen} options={{ headerShown: false }} />
-        <Tab.Screen name="Register" component={Register} options={{ title: 'Register', headerShown: false }} />
-      </Tab.Navigator>
-    </NavigationContainer >
+    <Stack.Navigator
+    initialRouteName="Login"
+    screenOptions={{
+      headerShown: false,
+    }}
+  >
+    <Stack.Screen name="Register" component={Register} />
+    <Stack.Screen name="Login" component={Login} />
+    <Stack.Screen name="Home" component={Home} />
+     </Stack.Navigator>
+     </NavigationContainer>
+  
+    // <NavigationContainer>
+    //   <Tab.Navigator>
+    //     <Tab.Screen name="StudentsListScreen" component={StudentsListScreen} options={{ headerShown: false }} />
+    //     <Tab.Screen name="Register" component={Register} options={{ title: 'Register', headerShown: false }} />
+    //     <Tab.Screen name="Login" component={Login} options={{ title: 'Login', headerShown: false }} />
+    //   </Tab.Navigator>
+    // </NavigationContainer >
+   
 //     <View style={styles.container}>
 // <View style={styles.container}>
      
