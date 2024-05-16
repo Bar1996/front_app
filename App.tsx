@@ -10,6 +10,7 @@ import GoogleSigninComp from './Components/GoogleSigninComp';
 import Register from './Components/Register';
 import Login from './Components/Login';
 import Home from './Components/Home';
+import Start from './Components/Start';
 
 // const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -38,7 +39,7 @@ export default function App() {
    
     <NavigationContainer>
     <Stack.Navigator
-    initialRouteName="Login"
+    initialRouteName="Start"
     screenOptions={{
       headerShown: false,
     }}
@@ -46,6 +47,7 @@ export default function App() {
     <Stack.Screen name="Register" component={Register} />
     <Stack.Screen name="Login" component={Login} />
     <Stack.Screen name="Home" component={Home} />
+    <Stack.Screen name="Start" component={Start} />
      </Stack.Navigator>
      </NavigationContainer>
   

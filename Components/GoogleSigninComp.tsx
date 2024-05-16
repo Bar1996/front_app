@@ -3,17 +3,20 @@ import {
     GoogleSigninButton,
     statusCodes,
   } from '@react-native-google-signin/google-signin'
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import React, { useEffect, FC } from 'react';
+import { View, Text, StyleSheet, ToastAndroid, Button } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from 'expo-web-browser';
 import { CLIENT_ID } from '../core/config';
 import UserModel from '../Model/UserModel';
+import { theme } from '../core/theme';
+
 
 WebBrowser.maybeCompleteAuthSession();
 
 
-export default function GoogleSigninComp() {
+const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
+
 
   useEffect(() => {
     GoogleSignin.configure({
@@ -23,14 +26,17 @@ export default function GoogleSigninComp() {
   }, []);
 
   const signIn = async () => {
+    console.log("Sign in button pressed", CLIENT_ID);
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       console.log('Sign-in successful');
       const credentialResponse = userInfo.idToken;
-      await UserModel.SignInWithGoogle(credentialResponse);
-      
-      
+      const response = await UserModel.SignInWithGoogle(credentialResponse);
+      if(response?.data.message ===  "Login successful"){
+        navigation.navigate("Home");
+        ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
+    }
       // You can now use this userInfo object to authenticate the user in your backend
     } catch (error: any) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -45,14 +51,14 @@ export default function GoogleSigninComp() {
     }
   };
 
-  const signOut = async () => {
-    try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-    } catch (error: any) {
-      console.error(error);
-    }
-  };
+  // const signOut = async () => {
+  //   try {
+  //     await GoogleSignin.revokeAccess();
+  //     await GoogleSignin.signOut();
+  //   } catch (error: any) {
+  //     console.error(error);
+  //   }
+  // };
 
 
 
@@ -66,18 +72,20 @@ export default function GoogleSigninComp() {
         color={GoogleSigninButton.Color.Dark}
         onPress={signIn}
       />
-      <Button onPress={signOut} title="Sign out" />
+      {/* <Button onPress={signOut} title="Sign out" /> */}
 
   </View>
 );
 }
 
+export default GoogleSigninComp;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: theme.colors.tint,
   },
   text: {
     fontSize: 20,

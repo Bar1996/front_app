@@ -3,49 +3,44 @@ import {
     Text,
     View,
     TouchableOpacity,
+    TextInput,
+    ToastAndroid,
+    ActivityIndicator,
   } from "react-native";
   import React, { useState, FC, useEffect } from "react";
   import Ionicons from "@expo/vector-icons/Ionicons";
-  import { IconButton } from "react-native-paper";
+  import { Button, IconButton } from "react-native-paper";
   import { theme } from "../core/theme";
-  import UserModel from "../Model/UserModel";
-
+ import GoogleSigninComp from "./GoogleSigninComp";
   
-  const Logout: FC<{ navigation: any }> = ({ navigation }) => {
-    const OnLogoutPress = async () => {
-        console.log("Logout Button Pressed");
-        try {
-            const response = await UserModel.Logout();
-            navigation.navigate("Start");
-        } catch (err) {
-            console.log("Logout failed " + err);
-        }
-        }
-
-        const Check = async () => {
-            // console.log("Check Button Pressed");
-            try {
-                const response = await UserModel.Check();
-                console.log("response here 2: " + response);
-            } catch (err) {
-                console.log("Check failed " + err);
-            }
-            }
-  
-  
+  const Start: FC<{ navigation: any }> = ({ navigation }) => {
+   
   
     return (
-     <View style={styles.container}>
-        <View style={styles.buttons}>
-        <TouchableOpacity style={styles.button} onPress={OnLogoutPress}>
-          <Text style={styles.buttonText}>Logout</Text>
-        </TouchableOpacity>
+     
+      <View style={styles.container}>
+        <View style={{padding:10, width:230, }}>
+          <Button
+        mode="contained"
+        onPress={() => navigation.navigate('Login')}
+      >
+        Login
+      </Button>
       </View>
-      <View style={styles.buttons}>
-           <TouchableOpacity style={styles.button} onPress={Check}>
-             <Text style={styles.buttonText}>Check</Text>
-           </TouchableOpacity>
-         </View>
+      <View style={{padding:10, width:225, }}>
+      <Button
+        mode="outlined"
+        onPress={() => navigation.navigate('Register')}
+      >
+        Sign Up
+      </Button>
+      </View>
+      <View style={styles.divider}>
+        <Text style={styles.dividerText}>Or connect using</Text>
+      </View>
+      <View style={styles.buttonsContainer}>
+      <GoogleSigninComp navigation={navigation} />
+      </View>
       </View>
     
     );
@@ -59,6 +54,7 @@ import {
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
+        backgroundColor: theme.colors.tint,
       },
       title: {
         fontSize: 21,
@@ -109,8 +105,30 @@ import {
         fontWeight: "bold",
         color: theme.colors.primary,
       },
+      divider: {
+        position: 'relative',
+        width: '96%',
+        height: 1,
+        backgroundColor: theme.colors.text,
+        marginVertical: 16,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      dividerText: {
+        position: 'absolute',
+        backgroundColor: theme.colors.tint,
+        fontSize: 13,
+        color: theme.colors.text,
+        padding: 8,
+      },
+      buttonsContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        marginBottom: 12,
+      },
     });
     
   
-  export default Logout;
+  export default Start;
   

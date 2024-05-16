@@ -4,6 +4,8 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, FC, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -19,6 +21,7 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (emailTouched) {
@@ -52,15 +55,20 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
   }, [navigation]);
 
   const OnLoginPress = async () => {
+    setIsLoading(true);
     console.log("Login Button Pressed");
     try {
       const response = await UserModel.Login(email, password);
       if(response?.data.message === "Login successful"){
         navigation.navigate("Home");
+        ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
+
     }
     } catch (err) {
       console.log("Login failed " + err);
-    }
+    }finally {
+        setIsLoading(false);
+      }
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -123,9 +131,13 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
       ) : null}
 
       <View style={styles.buttons}>
+      {isLoading ? (
+        <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
+      ) : (
         <TouchableOpacity style={styles.button} onPress={OnLoginPress}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
+        )}
       </View>
       <View style={styles.row}>
         <Text>Don’t have an account? </Text>
