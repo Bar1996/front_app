@@ -23,7 +23,6 @@ export interface IUser {
          
     }
     const SignInWithGoogle = async (credentialToken: any) => {
-        console.log("SignInWithGoogle()" + credentialToken);
         const data = {
             credentialResponse: credentialToken
         };
@@ -31,8 +30,6 @@ export interface IUser {
         const response = await apiClient.post("/auth/google", data);
         console.log("response: " + response.data.accessToken);
         await setToken(response.data.accessToken, response.data.refreshToken);
-
-        
         return response;
         }catch(err){
         console.log("fail registering user " + err);
@@ -78,14 +75,32 @@ export interface IUser {
         console.log("fail checking user " + err.response.data);
         
         }
-         
     }
-    function delayAction() {
-        console.log("Action will be performed after 3 seconds.");
-      }
-      
-      // Wait for 3000 milliseconds before executing the function
+
+    const getUserById = async () => {   
+        try {
+          const res = await apiClient.get('/auth/getById'); // Make sure this endpoint returns the necessary data
+          const userData = res.data; // Assuming the response has the user data in 'data'
+          console.log("user:", userData.imgUrl); // Debugging
+          return userData;
+        } catch (error) {
+          console.error("Failed to fetch user data:", error); // Error handling
+        }
+      };
+
+      const updateUserDetails = async (editedName: string, editedImgUrl: string) => {
+        try {
+          await apiClient.put('/auth/update', { name: editedName, imgUrl: editedImgUrl }); // Removed email from the update payload
+          return;
+        } catch ( error) {
+          console.error("Failed to update user details:", error); // Error handling
+        }
+      };
       
 
 
-    export default { registerUser, SignInWithGoogle, Login, Logout, Check};
+       
+        
+         
+
+    export default { registerUser, SignInWithGoogle, Login, Logout, Check, getUserById, updateUserDetails};

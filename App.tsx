@@ -11,8 +11,9 @@ import Register from './Components/Register';
 import Login from './Components/Login';
 import Home from './Components/Home';
 import Start from './Components/Start';
+import Profile from './Components/Profile';
 
-// const Stack = createNativeStackNavigator();
+
 const Tab = createBottomTabNavigator();
 const StudentsListStack = createNativeStackNavigator();
 const Stack = createNativeStackNavigator();
@@ -23,6 +24,7 @@ const StudentsListScreen: FC = () => {
       <StudentsListStack.Screen name="StudentListPage" component={StudentListPage} options={{ title: 'Students List' }} />
       <StudentsListStack.Screen name="StudentDetailsPage" component={StudentDetailsPage} options={{ title: 'Student Details' }} />
       <StudentsListStack.Screen name="Register" component={Register} options={{ title: 'Register', headerShown: false }} />
+
     </StudentsListStack.Navigator>
   );
 }
@@ -38,6 +40,7 @@ export default function App() {
   return (
    
     <NavigationContainer>
+      
     <Stack.Navigator
     initialRouteName="Start"
     screenOptions={{
@@ -48,6 +51,7 @@ export default function App() {
     <Stack.Screen name="Login" component={Login} />
     <Stack.Screen name="Home" component={Home} />
     <Stack.Screen name="Start" component={Start} />
+    <Stack.Screen name="Profile" component={Profile} />
      </Stack.Navigator>
      </NavigationContainer>
   

@@ -4,9 +4,7 @@ import {
     View,
     TouchableOpacity,
   } from "react-native";
-  import React, { useState, FC, useEffect } from "react";
-  import Ionicons from "@expo/vector-icons/Ionicons";
-  import { IconButton } from "react-native-paper";
+  import React, { FC } from "react";
   import { theme } from "../core/theme";
   import UserModel from "../Model/UserModel";
 
@@ -23,7 +21,7 @@ import {
         }
 
         const Check = async () => {
-            // console.log("Check Button Pressed");
+            
             try {
                 const response = await UserModel.Check();
                 console.log("response here 2: " + response);

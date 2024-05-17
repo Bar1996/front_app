@@ -3,8 +3,8 @@ import {
     GoogleSigninButton,
     statusCodes,
   } from '@react-native-google-signin/google-signin'
-import React, { useEffect, FC } from 'react';
-import { View, Text, StyleSheet, ToastAndroid, Button } from 'react-native';
+import React, { useEffect, FC, useState } from 'react';
+import { View, Text, StyleSheet, ToastAndroid, TouchableOpacity, ActivityIndicator } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from 'expo-web-browser';
 import { CLIENT_ID } from '../core/config';
@@ -16,6 +16,7 @@ WebBrowser.maybeCompleteAuthSession();
 
 
 const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
+  const [isLoading, setIsLoading] = useState(false);
 
 
   useEffect(() => {
@@ -26,6 +27,7 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
   }, []);
 
   const signIn = async () => {
+    setIsLoading(true);
     console.log("Sign in button pressed", CLIENT_ID);
     try {
       await GoogleSignin.hasPlayServices();
@@ -34,7 +36,7 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
       const credentialResponse = userInfo.idToken;
       const response = await UserModel.SignInWithGoogle(credentialResponse);
       if(response?.data.message ===  "Login successful"){
-        navigation.navigate("Home");
+        navigation.navigate("Profile");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
     }
       // You can now use this userInfo object to authenticate the user in your backend
@@ -48,6 +50,8 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
       } else {
         console.log('Some other error happened', error);
       }
+    }finally {
+      setIsLoading(false);
     }
   };
 
@@ -66,13 +70,20 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
   return (
     <View style={styles.container}>
 
-      <GoogleSigninButton
+      
+      {/* <Button onPress={signOut} title="Sign out" /> */}
+      <View>
+      {isLoading ? (
+        <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
+      ) : (
+        <GoogleSigninButton
         style={{ width: 192, height: 48 }}
         size={GoogleSigninButton.Size.Wide}
         color={GoogleSigninButton.Color.Dark}
         onPress={signIn}
       />
-      {/* <Button onPress={signOut} title="Sign out" /> */}
+        )}
+      </View>
 
   </View>
 );

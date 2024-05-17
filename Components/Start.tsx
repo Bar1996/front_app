@@ -2,13 +2,10 @@ import {
     StyleSheet,
     Text,
     View,
-    TouchableOpacity,
-    TextInput,
-    ToastAndroid,
     ActivityIndicator,
   } from "react-native";
   import React, { useState, FC, useEffect } from "react";
-  import Ionicons from "@expo/vector-icons/Ionicons";
+
   import { Button, IconButton } from "react-native-paper";
   import { theme } from "../core/theme";
  import GoogleSigninComp from "./GoogleSigninComp";

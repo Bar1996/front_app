@@ -60,7 +60,7 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
     try {
       const response = await UserModel.Login(email, password);
       if(response?.data.message === "Login successful"){
-        navigation.navigate("Home");
+        navigation.navigate("Profile");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
 
     }
