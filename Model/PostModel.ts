@@ -1,6 +1,7 @@
+import PostApi from "../api/PostApi";
+
 export type Post = {
-    title: string,
-    id: string,
+    id?: string,
     text: string,
     imgUrl: string
 }
@@ -8,16 +9,39 @@ export type Post = {
 const data: Post[] = [
 ];
 
-const getAllPosts = (): Post[] => {
-    return data;
-}
+const getAllPosts = async () => {
+    console.log("getAllStudents()");
+    const res: any = await PostApi.getAllPosts();
+    let posts = Array<Post>();
+    if (res.data) {
+      res.data.forEach((obj: any) => {
+        const post: Post = {
+          id: obj._id,
+          text: obj.text,
+          imgUrl: obj.imgUrl,
+        };
+        posts.push(post);
+      });
+    }
+    return posts;
+  };
 
 const getPost = (id: string): Post | undefined => {
     return data.find((post) => post.id == id);
 }
 
-const addPost = (post: Post) => {
-    data.push(post);
+const addPost = async (post: Post) => {
+    console.log("addPost()");
+    const res = await PostApi.addPost(post);
+    const newPost: Post = {
+        id: res.data._id,
+        text: post.text,
+        imgUrl: post.imgUrl,
+    };
+    console.log("newPost", newPost);
+    
+    data.push(newPost);
+    return newPost;
 }
 
 const deletePost = (id: string) => {

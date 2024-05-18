@@ -36,7 +36,7 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
       const credentialResponse = userInfo.idToken;
       const response = await UserModel.SignInWithGoogle(credentialResponse);
       if(response?.data.message ===  "Login successful"){
-        navigation.navigate("Profile");
+        navigation.navigate("AddNewPost");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
     }
       // You can now use this userInfo object to authenticate the user in your backend

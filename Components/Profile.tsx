@@ -48,12 +48,19 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
 
   const updateUserDetails = async () => {
     try {
+      console.log("editedImgUrl", editedImgUrl);
       const url = await StudentModel.uploadImage(editedImgUrl);
-      setEditedImgUrl(url);
-      console.log("url", url);
-      await UserModel.updateUserDetails(editedName, url);
+      if (url !== editedImgUrl) {
+        await UserModel.updateUserDetails(editedName, url);
       setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: url }));
       setModalVisible(false);
+      console.log("url", url);
+      }
+      else{
+        await UserModel.updateUserDetails(editedName, editedImgUrl);
+        setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: editedImgUrl }));
+    
+      }
     } catch (error) {
       console.error("Failed to update user details:", error);
     }
@@ -108,11 +115,11 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
           <View style={styles.modalView}>
             <TouchableOpacity onPress={() => openImagePicker('camera')} style={styles.iconRow}>
               <Ionicons name="camera" size={24} style={styles.icon} />
-              <Text style={styles.iconText}>Camera</Text>
+              <Text style={styles.iconText}>Open Camera</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => openImagePicker('gallery')} style={styles.iconRow}>
               <Ionicons name="image" size={24} style={styles.icon} />
-              <Text style={styles.iconText}>Gallery</Text>
+              <Text style={styles.iconText}>Open -Gallery</Text>
             </TouchableOpacity>
             <Button onPress={() => setImageModalVisible(false)} mode="text">Cancel</Button>
           </View>
@@ -132,6 +139,7 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
           <Image source={require("../assets/avatar.jpeg")} style={styles.avatar} />
         )}
         <Text style={styles.userName}>{user.name}</Text>
+        <Text style={styles.emailText}>{user.email}</Text>
        
         <TouchableOpacity
           style={styles.editButton}

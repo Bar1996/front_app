@@ -1,92 +1,160 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Button, Alert, TextInput, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar } from 'react-native';
 import React, { useState, FC } from 'react';
+import * as ImagePicker from 'expo-image-picker';
 import PostModel, { Post } from '../Model/PostModel';
-
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { theme } from '../core/theme';
+import Modal from 'react-native-modal';
+import StudentModel from '../Model/StudentModel';
 
 const AddNewPost: FC<{ navigation: any }> = ({ navigation }) => {
-    const [title, onChangeTitle] = React.useState('');
-    const [id, onChangeId] = React.useState('');
-    const [address, onChangeAddress] = React.useState('');
-    const [text, onChangeText] = React.useState('');
+    const [text, onChangeText] = useState('');
+    const [imgUrl, onChangeImgUrl] = useState('');
+    const [isModalVisible, setModalVisible] = useState(false);
 
-    const onCancel = () => {
-        console.log('Cancel');
-        navigation.navigate('StudentListPage');
-    }
-    const onSave = () => {
-        console.log('Save');
-        const post: Post = {
-            title: title,
-            id: id,
-            text: text,
-            imgUrl: address,
+    const onSave = async () => {
+        if (text === ""){
+            alert("Please enter text");
+            return;
         }
-  
-        PostModel.addPost(post);
-        navigation.navigate('HomePage');
-    }
+        if (imgUrl === ""){
+            alert("Please select an image");
+            return;
+        }
+        const url = await StudentModel.uploadImage(imgUrl);
+
+        const post: Post = { text, imgUrl: url};
+        await PostModel.addPost(post);
+        navigation.navigate('Home');
+    };
+
+    const openCamera = async () => {
+        const res = await ImagePicker.launchCameraAsync();
+        if (!res.canceled && res.assets?.length > 0) {
+            onChangeImgUrl(res.assets[0].uri);
+        }
+    };
+    
+    const openGallery = async () => {
+        const res = await ImagePicker.launchImageLibraryAsync();
+        if (!res.canceled && res.assets?.length > 0) {
+            onChangeImgUrl(res.assets[0].uri);
+        }
+    };
+
+    const toggleModal = () => {
+        setModalVisible(!isModalVisible);
+    };
+
     return (
         <View style={styles.container}>
-            <Image style={styles.avatar} source={require('../assets/avatar.jpeg')} />
+            <StatusBar barStyle="dark-content" />
+            <View style={styles.header}>
+                <Text style={styles.headerText}>Create Post</Text>
+            </View>
             <TextInput
                 style={styles.input}
-                onChangeText={onChangeTitle}
-                value={title}
-                placeholder="Enter title"
-            />
-            <TextInput
-                style={styles.input}
+                multiline
+                numberOfLines={4}
                 onChangeText={onChangeText}
                 value={text}
-                placeholder="Enter post details"
+                placeholder="What's on your mind?"
             />
+            <TouchableOpacity onPress={toggleModal} style={styles.avatarContainer}>
+                <Image source={imgUrl ? { uri: imgUrl } : require("../assets/placeholder.png")} style={styles.avatar} />
+            </TouchableOpacity>
+            <Modal isVisible={isModalVisible} onBackdropPress={toggleModal}>
+                <View style={styles.modalContent}>
+                    <TouchableOpacity onPress={openCamera} style={styles.iconRow}>
+                        <Ionicons name={"camera"} size={20} style={styles.icon} />
+                        <Text style={styles.iconText}>Take Photo</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={openGallery} style={styles.iconRow}>
+                        <Ionicons name={"image"} size={20} style={styles.icon} />
+                        <Text style={styles.iconText}>Choose from Gallery</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={toggleModal} style={styles.iconRow}>
+                        <Text>Cancel</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
             <View style={styles.buttons}>
-                <TouchableOpacity style={styles.button} onPress={onCancel}>
-                    <Text style={styles.buttonText}>CANCEL</Text>
-                </TouchableOpacity>
                 <TouchableOpacity style={styles.button} onPress={onSave}>
-                    <Text style={styles.buttonText}>SAVE</Text>
+                    <Text style={styles.buttonText}>Post</Text>
                 </TouchableOpacity>
             </View>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: StatusBar.currentHeight,
         flex: 1,
-        flexDirection: 'column',
+        backgroundColor: "#FFFFFF",
     },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        backgroundColor: 'blue',
+    header: {
+        padding: 16,
+        borderBottomWidth: 1,
+        borderColor: "#ccc",
+        backgroundColor: "#f8f9fa",
     },
-    avatar: {
-        alignSelf: 'center',
-        height: 200,
-        width: 200,
+    headerText: {
+        fontWeight: "bold",
+        fontSize: 20,
     },
     input: {
-        height: 40,
-        margin: 12,
+        padding: 15,
+        fontSize: 18,
+        textAlignVertical: "top",
+        borderColor: "#ddd",
         borderWidth: 1,
-        padding: 10,
+        borderRadius: 10,
+        margin: 12,
+        backgroundColor: "#fff",
+    },
+    avatarContainer: {
+        alignItems: "center",
+        marginBottom: 20,
+    },
+    avatar: {
+        height: 200,
+        width: "90%",
+        margin: 10,
+        borderRadius: 10,
+    },
+    modalContent: {
+        backgroundColor: "white",
+        padding: 22,
+        borderRadius: 4,
+        width: "80%",
+    },
+    iconRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 10,
+    },
+    icon: {
+        marginRight: 10,
+    },
+    iconText: {
+        fontSize: 16,
     },
     buttons: {
-        flexDirection: 'row',
+        paddingVertical: 10,
+        paddingHorizontal: 12,
     },
     button: {
-        flex: 1,
-        margin: 10,
-        alignItems: 'center',
+        backgroundColor: "#007BFF",
+        borderRadius: 6,
+        paddingVertical: 12,
+        alignItems: "center",
+        justifyContent: "center",
     },
     buttonText: {
-        padding: 10
-    }
-
+        color: "#FFFFFF",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
 });
-
 
 export default AddNewPost;

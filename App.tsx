@@ -52,6 +52,7 @@ export default function App() {
     <Stack.Screen name="Home" component={Home} />
     <Stack.Screen name="Start" component={Start} />
     <Stack.Screen name="Profile" component={Profile} />
+    <Stack.Screen name="AddNewPost" component={AddNewPost} />
      </Stack.Navigator>
      </NavigationContainer>
   
