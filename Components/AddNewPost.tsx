@@ -33,18 +33,30 @@ const AddNewPost: FC<{ navigation: any }> = ({ navigation }) => {
     };
 
     const openCamera = async () => {
-        const res = await ImagePicker.launchCameraAsync();
-        if (!res.canceled && res.assets?.length > 0) {
-            onChangeImgUrl(res.assets[0].uri);
+        try {
+          const res = await ImagePicker.launchCameraAsync();
+          if (!res.canceled && res.assets.length > 0) {
+            const uri = res.assets[0].uri;
+            onChangeImgUrl(uri);
+            setModalVisible(false);
+          }
+        } catch (err) {
+          console.log("fail opening camera " + err);
         }
-    };
+      };
     
-    const openGallery = async () => {
-        const res = await ImagePicker.launchImageLibraryAsync();
-        if (!res.canceled && res.assets?.length > 0) {
-            onChangeImgUrl(res.assets[0].uri);
+      const openGallery = async () => {
+        try {
+          const res = await ImagePicker.launchImageLibraryAsync();
+          if (!res.canceled && res.assets.length > 0) {
+            const uri = res.assets[0].uri;
+            onChangeImgUrl(uri);
+            setModalVisible(false);
+          }
+        } catch (err) {
+          console.log("fail opening camera " + err);
         }
-    };
+      };
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
