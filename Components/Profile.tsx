@@ -12,9 +12,13 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [imageModalVisible, setImageModalVisible] = useState(false);
+  const [passwordModalVisible, setPasswordModalVisible] = useState(false);
   const [editedName, setEditedName] = useState('');
   const [editedEmail, setEditedEmail] = useState('');
   const [editedImgUrl, setEditedImgUrl] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
     const getStudent = async () => {
@@ -48,13 +52,11 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
 
   const updateUserDetails = async () => {
     try {
-      console.log("editedImgUrl", editedImgUrl);
       const url = await StudentModel.uploadImage(editedImgUrl);
       if (url !== editedImgUrl) {
         await UserModel.updateUserDetails(editedName, url);
       setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: url }));
       setModalVisible(false);
-      console.log("url", url);
       }
       else{
         await UserModel.updateUserDetails(editedName, editedImgUrl);
@@ -65,6 +67,24 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
       console.error("Failed to update user details:", error);
     }
   };
+
+  const changePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      alert("New passwords do not match.");
+      return;
+    }
+    try {
+      await UserModel.changePassword(currentPassword, newPassword);
+      alert("Password changed successfully!");
+      setPasswordModalVisible(false);
+    } catch (error) {
+      console.error("Failed to change password:", error);
+    }
+  };
+
+  if (!user) {
+    return <View style={styles.loader}><ActivityIndicator size="large" color={theme.colors.primary} /></View>;
+  }
 
   if (!user) {
     return <View style={styles.loader}><ActivityIndicator size="large" color={theme.colors.primary} /></View>;
@@ -125,13 +145,47 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={passwordModalVisible}
+        onRequestClose={() => setPasswordModalVisible(false)}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TextInput
+              style={styles.input}
+              onChangeText={setCurrentPassword}
+              value={currentPassword}
+              placeholder="Enter your password"
+              secureTextEntry={true}
+            />
+            <TextInput
+              style={styles.input}
+              onChangeText={setNewPassword}
+              value={newPassword}
+              placeholder="Enter new password"
+              secureTextEntry={true}
+            />
+            <TextInput
+              style={styles.input}
+              onChangeText={setConfirmPassword}
+              value={confirmPassword}
+              placeholder="Confirm new password"
+              secureTextEntry={true}
+            />
+            <Button onPress={changePassword} mode="contained" style={styles.saveButton}>Change Password</Button>
+            <Button onPress={() => setPasswordModalVisible(false)} mode="text">Cancel</Button>
+          </View>
+        </View>
+      </Modal>
 
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="arrow-back" size={20} color="black" />
           <Text style={styles.headerText}>Back</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
       <View style={styles.profileCard}>
         {editedImgUrl ? (
           <Image source={{ uri: editedImgUrl }} style={styles.avatar} />
@@ -146,8 +200,15 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
           onPress={() => setModalVisible(true)}
         >
           <Ionicons name="pencil-outline" size={20} color="white" />
-          <Text style={styles.buttonText}>Edit</Text>
+          <Text style={styles.buttonText}>Edit Profile</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => setPasswordModalVisible(true)}
+      >
+        <Ionicons name="key-outline" size={20} color="white" />
+        <Text style={styles.buttonText}>Change Password</Text>
+      </TouchableOpacity>
       </View>
     </View>
   );
@@ -249,6 +310,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
+    marginVertical: 30,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

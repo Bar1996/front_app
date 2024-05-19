@@ -16,11 +16,15 @@ import UserPostList from './Components/UserPostList';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 
+
 const Tab = createBottomTabNavigator();
+
 const PostsListStack = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-type IconName = 'home' | 'home-outline' | 'person-circle' | 'person-circle-outline';
+
+
+type IconName = 'home' | 'home-outline' | 'person-circle' | 'person-circle-outline' | 'folder' | 'folder-outline';
 
 const PostsListScreen: FC = () => {
   return (
@@ -32,6 +36,8 @@ const PostsListScreen: FC = () => {
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline'; // Use type assertion here if necessary
           } else if (route.name === 'UserPostList') {
+            iconName = focused ? 'folder' : 'folder-outline'; // Use type assertion here if necessary
+          } else if (route.name === 'Profile') {
             iconName = focused ? 'person-circle' : 'person-circle-outline'; // Use type assertion here if necessary
           } else {
             iconName = 'home'; // Default case, should not typically happen, adjust as necessary
@@ -45,9 +51,14 @@ const PostsListScreen: FC = () => {
     >
       <Tab.Screen name="Home" component={PostListPage} options={{ title: 'Home' }} />
       <Tab.Screen name="UserPostList" component={UserPostList} options={{ title: 'My Posts' }} />
+      <Tab.Screen name="Profile" component={Profile} options={{ title: 'Profile', headerShown: false }} />
     </Tab.Navigator>
   );
 };
+
+
+
+
 
 
 
@@ -73,8 +84,6 @@ export default function App() {
     <Stack.Screen name="Profile" component={Profile} />
     <Stack.Screen name="AddNewPost" component={AddNewPost} />
     <Stack.Screen name="PostsListScreen" component={PostsListScreen} />
-    
-    
      </Stack.Navigator>
      </NavigationContainer>
   

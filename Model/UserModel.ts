@@ -96,13 +96,15 @@ export interface IUser {
           console.error("Failed to update user details:", error); // Error handling
         }
       };
-      
+
+      const changePassword = async (oldPassword: string, newPassword: string) => {
+        try {
+          await apiClient.put('/auth/changePassword', { oldPassword, newPassword });
+          return;
+        } catch (error) {
+          console.error("Failed to change password:", error); // Error handling
+        } 
+      };
 
 
-
-
-       
-        
-         
-
-    export default { registerUser, SignInWithGoogle, Login, Logout, Check, getUserById, updateUserDetails};
+    export default { registerUser, SignInWithGoogle, Login, Logout, Check, getUserById, updateUserDetails, changePassword};

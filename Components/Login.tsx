@@ -62,7 +62,6 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
       if(response?.data.message === "Login successful"){
         navigation.navigate("Profile");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
-
     }
     } catch (err) {
       console.log("Login failed " + err);
