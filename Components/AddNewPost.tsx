@@ -1,9 +1,8 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert } from 'react-native';
 import React, { useState, FC } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import PostModel, { Post } from '../Model/PostModel';
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { theme } from '../core/theme';
 import Modal from 'react-native-modal';
 import StudentModel from '../Model/StudentModel';
 
@@ -14,18 +13,23 @@ const AddNewPost: FC<{ navigation: any }> = ({ navigation }) => {
 
     const onSave = async () => {
         if (text === ""){
-            alert("Please enter text");
+            Alert.alert("Please enter text");
             return;
         }
         if (imgUrl === ""){
-            alert("Please select an image");
+            Alert.alert("Please select an image");
             return;
         }
+        console.log("before back", imgUrl);
         const url = await StudentModel.uploadImage(imgUrl);
+        console.log("url", url);
 
-        const post: Post = { text, imgUrl: url};
+        const post: Post = { text, imgUrl: url, timestamp:  new Date().toLocaleString("en-US", {
+            year: 'numeric', month: 'numeric', day: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+          })};
         await PostModel.addPost(post);
-        navigation.navigate('Home');
+        navigation.navigate('PostsListScreen');
     };
 
     const openCamera = async () => {

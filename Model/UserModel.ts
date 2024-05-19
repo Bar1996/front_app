@@ -65,16 +65,16 @@ export interface IUser {
     }
 
     const Check = async () => {
-        try{
-        // console.log("Check Button Pressed",await getToken());
-        const response = await apiClient.get("/post");
-        console.log("response here: " + response.data);
-        return response.data;
-        }catch(err: any){
-        console.log("fail checking user " + err);
-        console.log("fail checking user " + err.response.data);
+        // try{
+        // // console.log("Check Button Pressed",await getToken());
+        // const response = await apiClient.get("/post");
+        // console.log("response here: " + response.data);
+        // return response.data;
+        // }catch(err: any){
+        // console.log("fail checking user " + err);
+        // console.log("fail checking user " + err.response.data);
         
-        }
+        // }
     }
 
     const getUserById = async () => {   
@@ -97,6 +97,8 @@ export interface IUser {
         }
       };
       
+
+
 
 
        

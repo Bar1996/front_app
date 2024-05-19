@@ -4,7 +4,7 @@ import {
     statusCodes,
   } from '@react-native-google-signin/google-signin'
 import React, { useEffect, FC, useState } from 'react';
-import { View, Text, StyleSheet, ToastAndroid, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ToastAndroid, TouchableOpacity, ActivityIndicator, Button } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from 'expo-web-browser';
 import { CLIENT_ID } from '../core/config';
@@ -36,7 +36,7 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
       const credentialResponse = userInfo.idToken;
       const response = await UserModel.SignInWithGoogle(credentialResponse);
       if(response?.data.message ===  "Login successful"){
-        navigation.navigate("AddNewPost");
+        navigation.navigate("PostsListScreen");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
     }
       // You can now use this userInfo object to authenticate the user in your backend
@@ -55,14 +55,14 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
-  // const signOut = async () => {
-  //   try {
-  //     await GoogleSignin.revokeAccess();
-  //     await GoogleSignin.signOut();
-  //   } catch (error: any) {
-  //     console.error(error);
-  //   }
-  // };
+  const signOut = async () => {
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
 
 
 
@@ -71,7 +71,7 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
     <View style={styles.container}>
 
       
-      {/* <Button onPress={signOut} title="Sign out" /> */}
+      <Button onPress={signOut} title="Sign out" />
       <View>
       {isLoading ? (
         <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator

@@ -1,29 +1,49 @@
 import PostApi from "../api/PostApi";
+import UserApi from "./UserModel";
+import ClientApi from "../api/ClientApi";
 
-export type Post = {
-    id?: string,
-    text: string,
-    imgUrl: string
-}
+interface User {
+    name: string;
+    imgUrl: string;
+  }
+  
+  export interface Post {
+    id?: string;
+    text: string;
+    imgUrl: string;
+    timestamp: string;
+    userName?: string;
+    userProfileImage?: string;
+  }
 
-const data: Post[] = [
+  const data: Post[] = [
 ];
 
-const getAllPosts = async () => {
-    console.log("getAllStudents()");
-    const res: any = await PostApi.getAllPosts();
-    let posts = Array<Post>();
-    if (res.data) {
-      res.data.forEach((obj: any) => {
-        const post: Post = {
-          id: obj._id,
-          text: obj.text,
-          imgUrl: obj.imgUrl,
-        };
-        posts.push(post);
-      });
-    }
-    return posts;
+  
+  const getUser = async (id: string): Promise<User> => {
+      const res = await ClientApi.get(`/auth/${id}`);
+      return res.data;
+  }
+  
+  const getAllPosts = async (): Promise<Post[]> => {
+      console.log("getAllPosts()");
+      const res: any = await PostApi.getAllPosts();
+      let posts: Post[] = [];
+      if (res.data) {
+        for (const obj of res.data) {
+          const user: User = await getUser(obj.owner); // Fetch user data for each post owner
+          const post: Post = {
+            id: obj._id,
+            text: obj.text,
+            imgUrl: obj.imgUrl,
+            timestamp: obj.timestamp,
+            userName: user.name,
+            userProfileImage: user.imgUrl
+          };
+          posts.push(post);
+        }
+      }
+      return posts;
   };
 
 const getPost = (id: string): Post | undefined => {
@@ -31,12 +51,13 @@ const getPost = (id: string): Post | undefined => {
 }
 
 const addPost = async (post: Post) => {
-    console.log("addPost()");
+    console.log("addPost() deatils: ", post);
     const res = await PostApi.addPost(post);
     const newPost: Post = {
         id: res.data._id,
         text: post.text,
         imgUrl: post.imgUrl,
+        timestamp: post.timestamp
     };
     console.log("newPost", newPost);
     
@@ -51,4 +72,26 @@ const deletePost = (id: string) => {
     }
 }
 
-export default { getAllPosts, getPost, addPost, deletePost};
+const getUserPosts = async (): Promise<Post[]> => {
+    console.log("getUserPosts()");
+   const res = await ClientApi.get("/auth/posts");
+   const user = await UserApi.getUserById(); 
+   console.log("user", user.name);
+   
+    const posts: Post[] = [];
+    for (const obj of res.data) {
+        const post: Post = {
+            id: obj._id,
+            text: obj.text,
+            imgUrl: obj.imgUrl,
+            timestamp: obj.timestamp,
+            userName: user.name,
+            userProfileImage: user.imgUrl
+        };
+        posts.push(post);
+    }
+    
+    return posts;
+}
+
+export default { getAllPosts, getPost, addPost, deletePost, getUserPosts};

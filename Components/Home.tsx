@@ -21,14 +21,16 @@ import {
         }
 
         const Check = async () => {
-            
-            try {
-                const response = await UserModel.Check();
-                console.log("response here 2: " + response);
-            } catch (err) {
-                console.log("Check failed " + err);
-            }
-            }
+
+            navigation.navigate("Profile");
+            // try {
+            //     const response = await UserModel.Check();
+            //     console.log("response here 2: " + response);
+            // } catch (err) {
+            //     console.log("Check failed " + err);
+            // }
+            // }
+        }
   
   
   
