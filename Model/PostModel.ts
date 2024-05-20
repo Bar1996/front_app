@@ -93,5 +93,13 @@ const getUserPosts = async (): Promise<Post[]> => {
     
     return posts;
 }
+const updatePost = async (post: Post) => {
+    console.log("updatePost() deatils: ", post);
+    await PostApi.updatePost(post);
+    const index = data.findIndex((p) => p.id === post.id);
+    if (index !== -1) {
+        data[index] = post;
+    }
+}
 
-export default { getAllPosts, getPost, addPost, deletePost, getUserPosts};
+export default { getAllPosts, getPost, addPost, deletePost, getUserPosts, updatePost};

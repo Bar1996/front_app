@@ -21,8 +21,14 @@ const UserPostList: FC<{ navigation: any }> = ({ navigation }) => {
         return () => unsubscribe();
     }, [navigation]);
 
+    const handleEditPress = (postId: string, postImage: string, postText: string) => {
+        // Pass parameters as a single object for consistency
+        navigation.navigate('EditPostScreen', { post: { postId, postText, postImage } });
+        console.log("Edit post with id: " + postId, postImage, postText);
+    };
+    
 
-    return (
+      return (
         <FlatList
             style={styles.flatList}
             data={data}
@@ -35,6 +41,7 @@ const UserPostList: FC<{ navigation: any }> = ({ navigation }) => {
                     userProfileImage={item.userProfileImage}
                     id={item.id}
                     timestamp={item.timestamp}
+                    onEditPress={handleEditPress}
                 />
             )}
         />

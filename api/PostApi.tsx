@@ -13,4 +13,9 @@ const deletePost = async (id: string) => {
   return apiClient.delete(`/post/${id}`);
 };
 
-export default { getAllPosts, addPost, deletePost};
+const updatePost = async (post: any) => {
+  console.log("updatePost()2", post.postId);
+  return apiClient.put(`/post/${post.postId}`, post);
+}
+
+export default { getAllPosts, addPost, deletePost, updatePost};

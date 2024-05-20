@@ -17,6 +17,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { getToken, removeToken } from './common/tokenStorage';
 import clientApi from './api/ClientApi';
 import LoadingScreen from './LoadingScreen';
+import EditPostScreen from './Components/EditPostScreen';
 
 
 
@@ -115,6 +116,7 @@ export default function App() {
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="AddNewPost" component={AddNewPost} />
         <Stack.Screen name="PostsListScreen" component={PostsListScreen} />
+        <Stack.Screen name="EditPostScreen" component={EditPostScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
