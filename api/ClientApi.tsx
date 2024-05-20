@@ -1,7 +1,7 @@
 
 import axios from 'axios';
 import { SERVER_URL } from '../core/config';
-import { getToken, setToken, getRefreshToken } from './tokenStorage';
+import { getToken, setToken, getRefreshToken } from '../common/tokenStorage';
 
 const api = axios.create({
   baseURL: SERVER_URL,

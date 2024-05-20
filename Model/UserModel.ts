@@ -1,5 +1,5 @@
 import apiClient from "../api/ClientApi";
-import { setToken, removeToken } from '../api/tokenStorage';
+import { setToken, removeToken } from '../common/tokenStorage';
 
 
 export interface IUser {

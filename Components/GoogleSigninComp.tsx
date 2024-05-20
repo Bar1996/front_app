@@ -5,7 +5,6 @@ import {
   } from '@react-native-google-signin/google-signin'
 import React, { useEffect, FC, useState } from 'react';
 import { View, Text, StyleSheet, ToastAndroid, TouchableOpacity, ActivityIndicator, Button } from 'react-native';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from 'expo-web-browser';
 import { CLIENT_ID } from '../core/config';
 import UserModel from '../Model/UserModel';
@@ -55,14 +54,14 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
     }
   };
 
-  const signOut = async () => {
-    try {
-      await GoogleSignin.revokeAccess();
-      await GoogleSignin.signOut();
-    } catch (error: any) {
-      console.error(error);
-    }
-  };
+  // const signOut = async () => {
+  //   try {
+  //     await GoogleSignin.revokeAccess();
+  //     await GoogleSignin.signOut();
+  //   } catch (error: any) {
+  //     console.error(error);
+  //   }
+  // };
 
 
 
@@ -71,7 +70,7 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
     <View style={styles.container}>
 
       
-      <Button onPress={signOut} title="Sign out" />
+      {/* <Button onPress={signOut} title="Sign out" /> */}
       <View>
       {isLoading ? (
         <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator

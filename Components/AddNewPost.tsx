@@ -25,7 +25,7 @@ const AddNewPost: FC<{ navigation: any }> = ({ navigation }) => {
         console.log("url", url);
 
         const post: Post = { text, imgUrl: url, timestamp:  new Date().toLocaleString("en-US", {
-            year: 'numeric', month: 'numeric', day: 'numeric',
+            year: 'numeric',  day: 'numeric', month: 'numeric',
             hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
           })};
         await PostModel.addPost(post);

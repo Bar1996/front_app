@@ -69,20 +69,23 @@ const uploadImage = async (imageUri: string): Promise<string> => {
     });
 
     const res = await StudentApi.uploadImage(formData);
+    if (!res || !res.data) {
+      console.error("Failed to receive valid response or data.");
+      return ""; // Return early if response is not valid
+    }
     const data = res.data as UploadImageResponse;
-
     if (data.message !== "Uploaded successfully") {
-      console.log("save failed " + res.status); //TODO
+      console.error("save failed", res.status);
+      return ""; // Return early if upload is not successful
     } else {
       console.log("save passed");
-      const url = data.url;
-      return url;
+      return data.url;
     }
   } catch (err) {
-    console.log("save failed " + err);
+    console.error("save failed", err);
+    return "";
   }
-  return "";
-};
+}
 
 export default {
   getAllStudents,
