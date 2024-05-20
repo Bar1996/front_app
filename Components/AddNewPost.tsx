@@ -1,17 +1,21 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert, ActivityIndicator } from 'react-native';
 import React, { useState, FC } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import PostModel, { Post } from '../Model/PostModel';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Modal from 'react-native-modal';
 import StudentModel from '../Model/StudentModel';
+import apiClient from '../api/ClientApi';
+import {theme} from '../core/theme';
 
 const AddNewPost: FC<{ navigation: any }> = ({ navigation }) => {
     const [text, onChangeText] = useState('');
     const [imgUrl, onChangeImgUrl] = useState('');
     const [isModalVisible, setModalVisible] = useState(false);
+    const [isLoading, setLoading] = useState(false);
 
     const onSave = async () => {
+
         if (text === ""){
             Alert.alert("Please enter text");
             return;
@@ -21,6 +25,7 @@ const AddNewPost: FC<{ navigation: any }> = ({ navigation }) => {
             return;
         }
         console.log("before back", imgUrl);
+        const check = await apiClient.get("/auth/check");
         const url = await StudentModel.uploadImage(imgUrl);
         console.log("url", url);
 
@@ -28,8 +33,18 @@ const AddNewPost: FC<{ navigation: any }> = ({ navigation }) => {
             year: 'numeric',  day: 'numeric', month: 'numeric',
             hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
           })};
-        await PostModel.addPost(post);
-        navigation.navigate('PostsListScreen');
+          try {
+            setLoading(true);
+            await PostModel.addPost(post);
+            navigation.navigate('PostsListScreen');
+          } catch (err) {
+            console.log("Failed to add post: " + err);
+          }finally {
+            setLoading(false);
+          }
+            
+        // await PostModel.addPost(post);
+        // navigation.navigate('PostsListScreen');
     };
 
     const openCamera = async () => {
@@ -95,9 +110,13 @@ const AddNewPost: FC<{ navigation: any }> = ({ navigation }) => {
                 </View>
             </Modal>
             <View style={styles.buttons}>
+            {isLoading ? (
+        <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
+      ) : (
                 <TouchableOpacity style={styles.button} onPress={onSave}>
                     <Text style={styles.buttonText}>Post</Text>
                 </TouchableOpacity>
+                )}
             </View>
         </View>
     );

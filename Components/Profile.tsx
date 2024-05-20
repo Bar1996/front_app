@@ -5,6 +5,7 @@ import { theme } from "../core/theme";
 import { IUser } from "../Model/UserModel";
 import UserModel from "../Model/UserModel";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import StudentModel from "../Model/StudentModel";
 
@@ -16,25 +17,36 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
   const [editedName, setEditedName] = useState('');
   const [editedEmail, setEditedEmail] = useState('');
   const [editedImgUrl, setEditedImgUrl] = useState('');
+  const [userType, setUserType] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
     const getStudent = async () => {
+      setIsLoading(true);
       try {
         const userData = await UserModel.getUserById();
         setUser(userData);
         setEditedName(userData.name);
         setEditedEmail(userData.email);
         setEditedImgUrl(userData.imgUrl);
+        setUserType(userData.userType);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
+      }finally {
+        setIsLoading(false);
       }
     };
-
     getStudent();
-  }, []);
+  })
+    return () => unsubscribe();
+  }, [navigation]);
 
   const openImagePicker = async (type: any) => {
     let pickerResult;
@@ -52,17 +64,30 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
 
   const updateUserDetails = async () => {
     try {
+      
       const url = await StudentModel.uploadImage(editedImgUrl);
-      if (url !== editedImgUrl) {
+      if (url !== user?.imgUrl){
         await UserModel.updateUserDetails(editedName, url);
-      setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: url }));
-      setModalVisible(false);
+        setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: url }));
+        setModalVisible(false);
       }
       else{
         await UserModel.updateUserDetails(editedName, editedImgUrl);
         setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: editedImgUrl }));
-    
+        setModalVisible(false);
       }
+      
+      // if (url !== editedImgUrl) {
+      //   await UserModel.updateUserDetails(editedName, url);
+      // setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: url }));
+      // setModalVisible(false);
+      // }
+      // else{
+      //   console.log("enter else");
+      //   await UserModel.updateUserDetails(editedName, editedImgUrl);
+      //   setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: editedImgUrl }));
+    
+      // }
     } catch (error) {
       console.error("Failed to update user details:", error);
     }
@@ -81,6 +106,18 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
       console.error("Failed to change password:", error);
     }
   };
+
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleToggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleToggleCurrentPasswordVisibility = () => {
+    setShowCurrentPassword(!showCurrentPassword);
+  }
 
   if (!user) {
     return <View style={styles.loader}><ActivityIndicator size="large" color={theme.colors.primary} /></View>;
@@ -153,63 +190,97 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
+          <View>
             <TextInput
               style={styles.input}
               onChangeText={setCurrentPassword}
               value={currentPassword}
               placeholder="Enter your password"
-              secureTextEntry={true}
+              secureTextEntry={!showCurrentPassword}
             />
+             <IconButton
+              icon={showCurrentPassword ? "eye-off" : "eye"}
+              onPress={handleToggleCurrentPasswordVisibility}
+              style={[
+                styles.iconButton,
+                { position: "absolute", right: -10, bottom: 18 },
+              ]}
+            />
+            </View>
+            <View>
             <TextInput
               style={styles.input}
               onChangeText={setNewPassword}
               value={newPassword}
               placeholder="Enter new password"
-              secureTextEntry={true}
+              secureTextEntry={!showPassword}
             />
+               <IconButton
+              icon={showPassword ? "eye-off" : "eye"}
+              onPress={handleTogglePasswordVisibility}
+              style={[
+                styles.iconButton,
+                { position: "absolute", right: -10, bottom: 18 },
+              ]}
+            />
+            </View>
+            <View>
             <TextInput
               style={styles.input}
               onChangeText={setConfirmPassword}
               value={confirmPassword}
               placeholder="Confirm new password"
-              secureTextEntry={true}
+              secureTextEntry={!showConfirmPassword}
             />
+               <IconButton
+              icon={showConfirmPassword ? "eye-off" : "eye"}
+              onPress={handleToggleConfirmPasswordVisibility}
+              style={[
+                styles.iconButton,
+                { position: "absolute", right: -10, bottom: 18 },
+              ]}
+            />
+            </View>
             <Button onPress={changePassword} mode="contained" style={styles.saveButton}>Change Password</Button>
             <Button onPress={() => setPasswordModalVisible(false)} mode="text">Cancel</Button>
           </View>
         </View>
       </Modal>
 
-      {/* <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={20} color="black" />
-          <Text style={styles.headerText}>Back</Text>
-        </TouchableOpacity>
-      </View> */}
+
       <View style={styles.profileCard}>
-        {editedImgUrl ? (
-          <Image source={{ uri: editedImgUrl }} style={styles.avatar} />
-        ) : (
-          <Image source={require("../assets/avatar.jpeg")} style={styles.avatar} />
-        )}
-        <Text style={styles.userName}>{user.name}</Text>
-        <Text style={styles.emailText}>{user.email}</Text>
-       
+  {isLoading ? (
+    <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
+  ) : (
+    <>
+      {editedImgUrl ? (
+        <Image source={{ uri: editedImgUrl }} style={styles.avatar} />
+      ) : (
+        <Image source={require("../assets/avatar.jpeg")} style={styles.avatar} />
+      )}
+      <Text style={styles.userName}>{user.name}</Text>
+      <Text style={styles.emailText}>{user.email}</Text>
+     
+      <TouchableOpacity
+        style={styles.editButton}
+        onPress={() => setModalVisible(true)}
+      >
+        <Ionicons name="pencil-outline" size={20} color="white" />
+        <Text style={styles.buttonText}>Edit Profile</Text>
+      </TouchableOpacity>
+      {userType === 'local' && (
         <TouchableOpacity
           style={styles.editButton}
-          onPress={() => setModalVisible(true)}
+          onPress={() => setPasswordModalVisible(true)}
         >
-          <Ionicons name="pencil-outline" size={20} color="white" />
-          <Text style={styles.buttonText}>Edit Profile</Text>
+          <Ionicons name="key-outline" size={20} color="white" />
+          <Text style={styles.buttonText}>Change Password</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-        style={styles.editButton}
-        onPress={() => setPasswordModalVisible(true)}
-      >
-        <Ionicons name="key-outline" size={20} color="white" />
-        <Text style={styles.buttonText}>Change Password</Text>
-      </TouchableOpacity>
-      </View>
+      )}
+    </>
+  )}
+</View>
+
     </View>
   );
 };
@@ -349,6 +420,9 @@ const styles = StyleSheet.create({
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  iconButton: {
+    margin: 0, // Adjust position of icon
   },
 });
   

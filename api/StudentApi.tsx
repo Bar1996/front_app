@@ -11,7 +11,6 @@ const addStudent = async (student: any) => {
 const uploadImage = async (image: any) => {
   console.log("get in uploadImage() " + image);
   try {
-    const check = await apiClient.get("/auth/check");
     const response = await apiClient.post("/file/upload", image, {
       headers: {
         "Content-Type": "multipart/form-data",

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useState, FC, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
@@ -44,6 +45,7 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
   const isFormValid =
     isNameValid && isPasswordValid && isEmailValid && isConfirmPasswordValid;
   const [isModalVisible, setModalVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (passwordTouched) {
@@ -91,8 +93,9 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
       name: name,
       imgUrl: "url",
       password: password,
-      email: email,
+      email: email.toLowerCase(),
     };
+    setIsLoading(true);
     try {
       console.log("imgUri: " + imgUri);
       if (imgUri !== "") {
@@ -103,6 +106,8 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
       await UserModel.registerUser(user);
     } catch (err) {
       console.log("Registration failed " + err);
+    }finally {
+      setIsLoading(false);
     }
     navigation.navigate("Login");
   };
@@ -341,6 +346,9 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
         </View>
 
         <View style={styles.buttons}>
+        {isLoading ? (
+        <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
+      ) : (
           <TouchableOpacity
             style={[styles.button, !isFormValid && { opacity: 0.5 }]} // Optionally adjust style when disabled
             onPress={isFormValid ? onSave : undefined} // Only allow onSave if the form is valid
@@ -348,6 +356,7 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
           >
             <Text style={styles.buttonText}>Sign-up</Text>
           </TouchableOpacity>
+          )}
         </View>
         <View style={styles.row}>
         <Text>Already have an account? </Text>

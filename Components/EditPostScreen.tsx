@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert, ActivityIndicator } from 'react-native';
 import React, { useState, FC, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import PostModel, { Post } from '../Model/PostModel';
@@ -12,6 +12,7 @@ const EditPostScreen: FC<{ navigation: any, route: any }> = ({ navigation, route
     const [text, onChangeText] = useState(post.postText);
     const [imgUrl, onChangeImgUrl] = useState(post.postImage);
     const [isModalVisible, setModalVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         if (!post) {
@@ -30,38 +31,56 @@ const EditPostScreen: FC<{ navigation: any, route: any }> = ({ navigation, route
             return;
         }
 
-        console.log("before update", imgUrl);
-        const url = imgUrl.startsWith('http') ? imgUrl : await StudentModel.uploadImage(imgUrl);
-        console.log("url", url);
+        setIsLoading(true); // Start loading
+        try {
+            console.log("before update", imgUrl);
+            const url = imgUrl.startsWith('http') ? imgUrl : await StudentModel.uploadImage(imgUrl);
+            console.log("url", url);
 
-        const updatedPost: Post = {
-            ...post,
-            text,
-            imgUrl: url,
-            timestamp: new Date().toLocaleString("en-US", {
-                year: 'numeric',  day: 'numeric', month: 'numeric',
-                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
-            })
-        };
-        await PostModel.updatePost(updatedPost); // Assume updatePost is a function to update the post
-        navigation.navigate('PostsListScreen');
+            const updatedPost: Post = {
+                ...post,
+                text,
+                imgUrl: url,
+                timestamp: new Date().toLocaleString("en-US", {
+                    year: 'numeric',  day: 'numeric', month: 'numeric',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+                })
+            };
+            await PostModel.updatePost(updatedPost); // Assume updatePost is a function to update the post
+            navigation.navigate('PostsListScreen');
+        } catch (error) {
+            console.error("Failed to update post:", error);
+            Alert.alert("Failed to update post. Please try again.");
+        } finally {
+            setIsLoading(false); // End loading
+        }
     };
 
     const openCamera = async () => {
-        const res = await ImagePicker.launchCameraAsync();
-        if (!res.canceled && res.assets.length > 0) {
-            const uri = res.assets[0].uri;
-            onChangeImgUrl(uri);
-            setModalVisible(false);
+        try {
+            const res = await ImagePicker.launchCameraAsync();
+            if (!res.canceled && res.assets.length > 0) {
+                const uri = res.assets[0].uri;
+                onChangeImgUrl(uri);
+                setModalVisible(false);
+            }
+        } catch (error) {
+            console.error("Failed to open camera:", error);
+            Alert.alert("Failed to open camera. Please try again.");
         }
     };
     
     const openGallery = async () => {
-        const res = await ImagePicker.launchImageLibraryAsync();
-        if (!res.canceled && res.assets.length > 0) {
-            const uri = res.assets[0].uri;
-            onChangeImgUrl(uri);
-            setModalVisible(false);
+        try {
+            const res = await ImagePicker.launchImageLibraryAsync();
+            if (!res.canceled && res.assets.length > 0) {
+                const uri = res.assets[0].uri;
+                onChangeImgUrl(uri);
+                setModalVisible(false);
+            }
+        } catch (error) {
+            console.error("Failed to open gallery:", error);
+            Alert.alert("Failed to open gallery. Please try again.");
         }
     };
 
@@ -102,8 +121,12 @@ const EditPostScreen: FC<{ navigation: any, route: any }> = ({ navigation, route
                 </View>
             </Modal>
             <View style={styles.buttons}>
-                <TouchableOpacity style={styles.button} onPress={onSave}>
-                    <Text style={styles.buttonText}>Update Post</Text>
+                <TouchableOpacity style={styles.button} onPress={onSave} disabled={isLoading}>
+                    {isLoading ? (
+                        <ActivityIndicator size="small" color="#FFFFFF" />
+                    ) : (
+                        <Text style={styles.buttonText}>Update Post</Text>
+                    )}
                 </TouchableOpacity>
             </View>
         </View>

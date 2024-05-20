@@ -8,6 +8,7 @@ export interface IUser {
     _id?: string;
     password?: string;
     imgUrl?: string;
+    userType?: string;
     accsessToken?: string;
     refreshToken?: string;
     }
