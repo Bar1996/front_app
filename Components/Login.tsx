@@ -6,6 +6,7 @@ import {
   TextInput,
   ToastAndroid,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import React, { useState, FC, useEffect } from "react";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -63,8 +64,12 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
         navigation.navigate("PostsListScreen");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
     }
-    } catch (err) {
+    } catch (err: any) {
       console.log("Login failed " + err);
+      const errorMessage = err.response?.data ||
+      err.message ||
+      "An error occurred during Login.";
+    Alert.alert("Login Failed", errorMessage);
     }finally {
         setIsLoading(false);
       }

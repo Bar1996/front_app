@@ -7,12 +7,13 @@ import {
   TextInput,
   KeyboardAvoidingView,
   ActivityIndicator,
+  Alert,
+  ToastAndroid
 } from "react-native";
 import React, { useState, FC, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import UserModel, { IUser } from "../Model/UserModel";
-import StudentModel from "../Model/StudentModel";
 import { emailValidator } from "../helpers/emailValidator";
 import { passwordValidator } from "../helpers/passwordValidator";
 import { nameValidator } from "../helpers/nameValidator";
@@ -20,8 +21,7 @@ import { confirmValidator } from "../helpers/confirmValidator";
 import { IconButton } from "react-native-paper";
 import { theme } from "../core/theme";
 import Modal from "react-native-modal";
-import ImageModel from '../Model/ImageModel';
-
+import ImageModel from "../Model/ImageModel";
 
 const Register: FC<{ navigation: any }> = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -91,6 +91,10 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
 
   const onSave = async () => {
     console.log("Save");
+    if (!imgUri) {
+      Alert.alert("Image Required", "Please upload an image.");
+      return;
+    }
     const user: IUser = {
       name: name,
       imgUrl: "url",
@@ -105,13 +109,21 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
         user.imgUrl = url;
         console.log("url: " + user.imgUrl);
       }
-      await UserModel.registerUser(user);
-    } catch (err) {
+      const response = await UserModel.registerUser(user);
+      if (response?.status === 200) {
+        navigation.navigate("Login");
+        ToastAndroid.show("Registration successful", ToastAndroid.TOP);2
+      }
+    } catch (err: any) {
       console.log("Registration failed " + err);
-    }finally {
+      const errorMessage =
+        err.response?.data ||
+        err.message ||
+        "An error occurred during registration.";
+      Alert.alert("Registration Failed", errorMessage);
+    } finally {
       setIsLoading(false);
     }
-    navigation.navigate("Login");
   };
 
   const openCamera = async () => {
@@ -348,23 +360,23 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
         </View>
 
         <View style={styles.buttons}>
-        {isLoading ? (
-        <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
-      ) : (
-          <TouchableOpacity
-            style={[styles.button, !isFormValid && { opacity: 0.5 }]} // Optionally adjust style when disabled
-            onPress={isFormValid ? onSave : undefined} // Only allow onSave if the form is valid
-            disabled={!isFormValid} // Disable the button if not valid
-          >
-            <Text style={styles.buttonText}>Sign-up</Text>
-          </TouchableOpacity>
+          {isLoading ? (
+            <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
+          ) : (
+            <TouchableOpacity
+              style={[styles.button, !isFormValid && { opacity: 0.5 }]} // Optionally adjust style when disabled
+              onPress={isFormValid ? onSave : undefined} // Only allow onSave if the form is valid
+              disabled={!isFormValid} // Disable the button if not valid
+            >
+              <Text style={styles.buttonText}>Sign-up</Text>
+            </TouchableOpacity>
           )}
         </View>
         <View style={styles.row}>
-        <Text>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.link}>Login</Text>
-        </TouchableOpacity>
+          <Text>Already have an account? </Text>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={styles.link}>Login</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </KeyboardAvoidingView>

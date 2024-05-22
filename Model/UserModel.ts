@@ -18,7 +18,8 @@ const registerUser = async (user: IUser) => {
         console.log("response: " + response);
         return response;
     } catch (err) {
-        console.log("fail registering user " + err);
+      console.log("fail registering user " + err);
+      throw err;
     }
 };
 
@@ -30,6 +31,7 @@ const signInWithGoogle = async (credentialToken: any) => {
         return response;
     } catch (err) {
         console.log("fail registering user " + err);
+        throw err;
     }
 };
 
@@ -41,6 +43,7 @@ const login = async (email: string, password: string) => {
         return response;
     } catch (err) {
         console.log("Login fail " + err);
+        throw err;
     }
 };
 
