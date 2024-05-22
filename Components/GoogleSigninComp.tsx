@@ -33,7 +33,7 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
       const userInfo = await GoogleSignin.signIn();
       console.log('Sign-in successful');
       const credentialResponse = userInfo.idToken;
-      const response = await UserModel.SignInWithGoogle(credentialResponse);
+      const response = await UserModel.signInWithGoogle(credentialResponse);
       if(response?.data.message ===  "Login successful"){
         navigation.navigate("PostsListScreen");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);

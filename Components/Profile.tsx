@@ -8,6 +8,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import StudentModel from "../Model/StudentModel";
+import ImageModel from '../Model/ImageModel';
+
 
 const Profile: FC<{ navigation: any }> = ({ navigation }) => {
   const [user, setUser] = useState<IUser | null>(null);
@@ -65,7 +67,7 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
   const updateUserDetails = async () => {
     try {
       
-      const url = await StudentModel.uploadImage(editedImgUrl);
+      const url = await ImageModel.uploadImage(editedImgUrl);
       if (url !== user?.imgUrl){
         await UserModel.updateUserDetails(editedName, url);
         setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: url }));

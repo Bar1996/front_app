@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert, ActivityIndicator, ToastAndroid } from 'react-native';
 import React, { useState, FC } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import PostModel, { Post } from '../Model/PostModel';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Modal from 'react-native-modal';
 import StudentModel from '../Model/StudentModel';
+import ImageModel from '../Model/ImageModel';
 import apiClient from '../api/ClientApi';
 import {theme} from '../core/theme';
 
@@ -26,7 +27,7 @@ const AddNewPost: FC<{ navigation: any }> = ({ navigation }) => {
         }
         console.log("before back", imgUrl);
         const check = await apiClient.get("/auth/check");
-        const url = await StudentModel.uploadImage(imgUrl);
+        const url = await ImageModel.uploadImage(imgUrl);
         console.log("url", url);
 
         const post: Post = { text, imgUrl: url, timestamp:  new Date().toLocaleString("en-US", {
@@ -36,15 +37,13 @@ const AddNewPost: FC<{ navigation: any }> = ({ navigation }) => {
           try {
             setLoading(true);
             await PostModel.addPost(post);
+            ToastAndroid.show("Post added successfully", ToastAndroid.SHORT);
             navigation.navigate('PostsListScreen');
           } catch (err) {
             console.log("Failed to add post: " + err);
           }finally {
             setLoading(false);
           }
-            
-        // await PostModel.addPost(post);
-        // navigation.navigate('PostsListScreen');
     };
 
     const openCamera = async () => {

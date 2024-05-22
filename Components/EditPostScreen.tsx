@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert, ActivityIndicator, ToastAndroid } from 'react-native';
 import React, { useState, FC, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import PostModel, { Post } from '../Model/PostModel';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Modal from 'react-native-modal';
 import StudentModel from '../Model/StudentModel';
+import ImageModel from '../Model/ImageModel';
+
 
 const EditPostScreen: FC<{ navigation: any, route: any }> = ({ navigation, route }) => {
     const { post } = route.params; // Expecting post details to be passed in when navigating to this screen
@@ -34,7 +36,7 @@ const EditPostScreen: FC<{ navigation: any, route: any }> = ({ navigation, route
         setIsLoading(true); // Start loading
         try {
             console.log("before update", imgUrl);
-            const url = imgUrl.startsWith('http') ? imgUrl : await StudentModel.uploadImage(imgUrl);
+            const url = imgUrl.startsWith('http') ? imgUrl : await ImageModel.uploadImage(imgUrl);
             console.log("url", url);
 
             const updatedPost: Post = {
@@ -88,6 +90,38 @@ const EditPostScreen: FC<{ navigation: any, route: any }> = ({ navigation, route
         setModalVisible(!isModalVisible);
     };
 
+    const onDelete = async () => {
+        Alert.alert(
+            "Delete Post",
+            "Are you sure you want to delete this post?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: async () => {
+                        setIsLoading(true);
+                        try {
+                            console.log("Deleting post with id:", post.postId);
+                            await PostModel.deletePost(post.postId);
+                            ToastAndroid.show("Post deleted successfully", ToastAndroid.TOP);
+                            navigation.navigate('PostsListScreen');
+                        } catch (error) {
+                            console.error("Failed to delete post:", error);
+                            Alert.alert("Failed to delete post. Please try again.");
+                        } finally {
+                            setIsLoading(false);
+                        }
+                    }
+                }
+            ]
+        );
+    };
+    
+
     return (
         <View style={styles.container}>
             <StatusBar barStyle="dark-content" />
@@ -128,6 +162,13 @@ const EditPostScreen: FC<{ navigation: any, route: any }> = ({ navigation, route
                         <Text style={styles.buttonText}>Update Post</Text>
                     )}
                 </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={onDelete} disabled={isLoading}>
+        {isLoading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+        ) : (
+            <Text style={styles.buttonText}>Delete Post</Text>
+        )}
+    </TouchableOpacity>
             </View>
         </View>
     );
@@ -201,6 +242,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
     },
+    deleteButton: {
+        backgroundColor: "#FF0000", // Red color for delete button
+        marginTop: 10, // Space between update and delete button
+    }
+    
 });
 
 export default EditPostScreen;

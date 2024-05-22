@@ -65,11 +65,14 @@ const addPost = async (post: Post) => {
     return newPost;
 }
 
-const deletePost = (id: string) => {
-    const index = data.findIndex((post) => post.id === id);
-    if (index !== -1) {
-        data.splice(index, 1);
-    }
+const deletePost = async (id: string) => {
+  try {
+    console.log("deletePost() id: ", id);
+    PostApi.deletePost(id);
+  } catch (error) {
+    console.error("Failed to delete post:", error);
+    throw new Error("Failed to delete post");
+  }
 }
 
 const getUserPosts = async (): Promise<Post[]> => {

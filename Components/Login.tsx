@@ -58,7 +58,7 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
     setIsLoading(true);
     console.log("Login Button Pressed");
     try {
-      const response = await UserModel.Login(email.toLowerCase(), password);
+      const response = await UserModel.login(email.toLowerCase(), password);
       if(response?.data.message === "Login successful"){
         navigation.navigate("PostsListScreen");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);

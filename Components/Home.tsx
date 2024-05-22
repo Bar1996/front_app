@@ -13,7 +13,7 @@ import {
     const OnLogoutPress = async () => {
         console.log("Logout Button Pressed");
         try {
-            const response = await UserModel.Logout();
+            const response = await UserModel.logout();
             navigation.navigate("Start");
         } catch (err) {
             console.log("Logout failed " + err);

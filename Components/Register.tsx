@@ -20,6 +20,8 @@ import { confirmValidator } from "../helpers/confirmValidator";
 import { IconButton } from "react-native-paper";
 import { theme } from "../core/theme";
 import Modal from "react-native-modal";
+import ImageModel from '../Model/ImageModel';
+
 
 const Register: FC<{ navigation: any }> = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -99,7 +101,7 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
     try {
       console.log("imgUri: " + imgUri);
       if (imgUri !== "") {
-        const url = await StudentModel.uploadImage(imgUri);
+        const url = await ImageModel.uploadImage(imgUri);
         user.imgUrl = url;
         console.log("url: " + user.imgUrl);
       }
