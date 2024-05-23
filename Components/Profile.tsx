@@ -7,7 +7,6 @@ import UserModel from "../Model/UserModel";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import StudentModel from "../Model/StudentModel";
 import ImageModel from '../Model/ImageModel';
 
 

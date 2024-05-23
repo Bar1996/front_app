@@ -1,5 +1,8 @@
 import UserApi from "../api/UserApi";
-import { setToken, removeToken } from '../common/tokenStorage';
+import { setToken } from '../common/tokenStorage';
+import {
+  GoogleSignin,
+} from '@react-native-google-signin/google-signin'
 
 export interface IUser {
     name: string;
@@ -48,11 +51,16 @@ const login = async (email: string, password: string) => {
 };
 
 const logout = async () => {
-    try {
-        await UserApi.logout();
-    } catch (err) {
-        console.log("Logout fail " + err);
-    }
+  try {
+      await UserApi.logout();
+      if (await GoogleSignin.isSignedIn()) {
+        console.log("Google sign out");
+          await GoogleSignin.signOut();
+      }
+  } catch (err) {
+      console.log("Logout fail " + err);
+      throw err; // Rethrow the error to handle it in the component
+  }
 };
 
 const check = async () => {

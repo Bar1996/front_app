@@ -3,33 +3,35 @@ import {
     Text,
     View,
     TouchableOpacity,
+    Switch,
+    ToastAndroid,
+    ActivityIndicator,
   } from "react-native";
-  import React, { FC } from "react";
+  import React, { FC, useState,useContext } from "react";
   import { theme } from "../core/theme";
   import UserModel from "../Model/UserModel";
+  import { removeToken } from "../common/tokenStorage";
 
   
   const Logout: FC<{ navigation: any }> = ({ navigation }) => {
-    const OnLogoutPress = async () => {
-        console.log("Logout Button Pressed");
-        try {
-            const response = await UserModel.logout();
-            navigation.navigate("Start");
-        } catch (err) {
-            console.log("Logout failed " + err);
-        }
-        }
+    const [isLoading, setIsLoading] = useState(false);
+
+    const onLogoutPress = async () => {
+      console.log("Logout Button Pressed");
+      try {
+          setIsLoading(true);
+          await UserModel.logout();
+          navigation.navigate("Start");
+          ToastAndroid.show("Goodbye 👋, See you again soon 😊", ToastAndroid.SHORT);
+      } catch (err) {
+          console.log("Logout failed " + err);
+      }finally {
+          setIsLoading(false);
+      }
+  };
 
         const Check = async () => {
-
-            navigation.navigate("Profile");
-            // try {
-            //     const response = await UserModel.Check();
-            //     console.log("response here 2: " + response);
-            // } catch (err) {
-            //     console.log("Check failed " + err);
-            // }
-            // }
+          removeToken();
         }
   
   
@@ -37,9 +39,14 @@ import {
     return (
      <View style={styles.container}>
         <View style={styles.buttons}>
-        <TouchableOpacity style={styles.button} onPress={OnLogoutPress}>
+        {isLoading ? (
+    <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
+  ) : (
+
+        <TouchableOpacity style={styles.button} onPress={onLogoutPress}>
           <Text style={styles.buttonText}>Logout</Text>
         </TouchableOpacity>
+        )}
       </View>
       <View style={styles.buttons}>
            <TouchableOpacity style={styles.button} onPress={Check}>

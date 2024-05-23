@@ -1,11 +1,9 @@
-import { StyleSheet, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet } from 'react-native';
 import React, { useState, FC, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import StudentDetailsPage from './Components/StudentDetailsPage';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AddNewPost from './Components/AddNewPost';
-import GoogleSigninComp from './Components/GoogleSigninComp';
 import Register from './Components/Register';
 import Login from './Components/Login';
 import Home from './Components/Home';
@@ -14,10 +12,12 @@ import Profile from './Components/Profile';
 import PostListPage from './Components/PostListPage';
 import UserPostList from './Components/UserPostList';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { getToken, removeToken } from './common/tokenStorage';
+import { getToken } from './common/tokenStorage';
 import clientApi from './api/ClientApi';
 import LoadingScreen from './LoadingScreen';
 import EditPostScreen from './Components/EditPostScreen';
+
+
 
 
 
@@ -72,7 +72,9 @@ const PostsListScreen: FC = () => {
 export default function App() {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  
+
+
+
 
   useEffect(() => {
     const checkToken = async () => {
@@ -105,7 +107,7 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
+       <NavigationContainer >
       <Stack.Navigator
         initialRouteName={isAuthenticated ? "PostsListScreen" : "Start"}
         screenOptions={{ headerShown: false }}
@@ -119,6 +121,7 @@ export default function App() {
         <Stack.Screen name="EditPostScreen" component={EditPostScreen} />
       </Stack.Navigator>
     </NavigationContainer>
+    
   );
 }
 

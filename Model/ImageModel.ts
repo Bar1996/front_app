@@ -1,5 +1,4 @@
 import ImageApi from "../api/ImageApi";
-import StudentApi from "../api/StudentApi";
 import FormData from "form-data";
 
 

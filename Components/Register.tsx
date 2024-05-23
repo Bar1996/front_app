@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   ActivityIndicator,
   Alert,
-  ToastAndroid
+  ToastAndroid,
 } from "react-native";
 import React, { useState, FC, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
@@ -48,6 +48,7 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
     isNameValid && isPasswordValid && isEmailValid && isConfirmPasswordValid;
   const [isModalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
 
   useEffect(() => {
     if (passwordTouched) {
@@ -379,6 +380,7 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+      
     </KeyboardAvoidingView>
   );
 };

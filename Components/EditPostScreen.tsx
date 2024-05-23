@@ -1,12 +1,10 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert, ActivityIndicator, ToastAndroid } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, TextInput, StatusBar, Alert, ActivityIndicator, ToastAndroid, ScrollView, Keyboard } from 'react-native';
 import React, { useState, FC, useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import PostModel, { Post } from '../Model/PostModel';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Modal from 'react-native-modal';
-import StudentModel from '../Model/StudentModel';
 import ImageModel from '../Model/ImageModel';
-
 
 const EditPostScreen: FC<{ navigation: any, route: any }> = ({ navigation, route }) => {
     const { post } = route.params; // Expecting post details to be passed in when navigating to this screen
@@ -120,57 +118,65 @@ const EditPostScreen: FC<{ navigation: any, route: any }> = ({ navigation, route
             ]
         );
     };
-    
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="dark-content" />
-            <View style={styles.header}>
-                <Text style={styles.headerText}>Edit Post</Text>
-            </View>
-            <TextInput
-                style={styles.input}
-                multiline
-                numberOfLines={4}
-                onChangeText={onChangeText}
-                value={text}
-                placeholder="What's on your mind?"
-            />
-            <TouchableOpacity onPress={toggleModal} style={styles.avatarContainer}>
-                <Image source={imgUrl ? { uri: imgUrl } : require("../assets/placeholder.png")} style={styles.avatar} />
-            </TouchableOpacity>
-            <Modal isVisible={isModalVisible} onBackdropPress={toggleModal}>
-                <View style={styles.modalContent}>
-                    <TouchableOpacity onPress={openCamera} style={styles.iconRow}>
-                        <Ionicons name={"camera"} size={20} style={styles.icon} />
-                        <Text style={styles.iconText}>Take Photo</Text>
+        <ScrollView>
+            <View style={styles.container}>
+                <StatusBar barStyle="dark-content" />
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <Ionicons name="arrow-back" size={24} color="black" />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={openGallery} style={styles.iconRow}>
-                        <Ionicons name={"image"} size={20} style={styles.icon} />
-                        <Text style={styles.iconText}>Choose from Gallery</Text>
+                    <Text style={styles.headerText}>Edit Post</Text>
+                </View>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.input}
+                        multiline = {false}
+                        numberOfLines={4}
+                        onChangeText={onChangeText}
+                        value={text}
+                        placeholder="What's on your mind?"
+                        returnKeyType="done"
+                        onSubmitEditing={Keyboard.dismiss}
+                    />
+                </View>
+                <TouchableOpacity onPress={toggleModal} style={styles.avatarContainer}>
+                    <Image source={imgUrl ? { uri: imgUrl } : require("../assets/placeholder.png")} style={styles.avatar} />
+                </TouchableOpacity>
+                <Modal isVisible={isModalVisible} onBackdropPress={toggleModal}>
+                    <View style={styles.modalContent}>
+                        <TouchableOpacity onPress={openCamera} style={styles.iconRow}>
+                            <Ionicons name={"camera"} size={20} style={styles.icon} />
+                            <Text style={styles.iconText}>Take Photo</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={openGallery} style={styles.iconRow}>
+                            <Ionicons name={"image"} size={20} style={styles.icon} />
+                            <Text style={styles.iconText}>Choose from Gallery</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={toggleModal} style={styles.iconRow}>
+                            <Text>Cancel</Text>
+                        </TouchableOpacity>
+                    </View>
+                </Modal>
+                <View style={styles.buttons}>
+                    <TouchableOpacity style={styles.button} onPress={onSave} disabled={isLoading}>
+                        {isLoading ? (
+                            <ActivityIndicator size="small" color="#FFFFFF" />
+                        ) : (
+                            <Text style={styles.buttonText}>Update Post</Text>
+                        )}
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={toggleModal} style={styles.iconRow}>
-                        <Text>Cancel</Text>
+                    <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={onDelete} disabled={isLoading}>
+                        {isLoading ? (
+                            <ActivityIndicator size="small" color="#FFFFFF" />
+                        ) : (
+                            <Text style={styles.buttonText}>Delete Post</Text>
+                        )}
                     </TouchableOpacity>
                 </View>
-            </Modal>
-            <View style={styles.buttons}>
-                <TouchableOpacity style={styles.button} onPress={onSave} disabled={isLoading}>
-                    {isLoading ? (
-                        <ActivityIndicator size="small" color="#FFFFFF" />
-                    ) : (
-                        <Text style={styles.buttonText}>Update Post</Text>
-                    )}
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={onDelete} disabled={isLoading}>
-        {isLoading ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-        ) : (
-            <Text style={styles.buttonText}>Delete Post</Text>
-        )}
-    </TouchableOpacity>
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -180,23 +186,34 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
     },
     header: {
+        flexDirection: 'row',
+        alignItems: 'center',
         padding: 16,
         borderBottomWidth: 1,
         borderColor: "#ccc",
         backgroundColor: "#f8f9fa",
     },
+    backButton: {
+        marginRight: 16,
+    },
     headerText: {
         fontWeight: "bold",
         fontSize: 20,
     },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 12,
+    },
     input: {
+        flex: 1,
         padding: 15,
         fontSize: 18,
         textAlignVertical: "top",
         borderColor: "#ddd",
         borderWidth: 1,
         borderRadius: 10,
-        margin: 12,
+        marginRight: 8,
         backgroundColor: "#fff",
     },
     avatarContainer: {
@@ -246,7 +263,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#FF0000", // Red color for delete button
         marginTop: 10, // Space between update and delete button
     }
-    
 });
 
 export default EditPostScreen;

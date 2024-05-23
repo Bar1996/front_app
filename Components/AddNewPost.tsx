@@ -4,7 +4,6 @@ import * as ImagePicker from 'expo-image-picker';
 import PostModel, { Post } from '../Model/PostModel';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Modal from 'react-native-modal';
-import StudentModel from '../Model/StudentModel';
 import ImageModel from '../Model/ImageModel';
 import apiClient from '../api/ClientApi';
 import {theme} from '../core/theme';

@@ -1,5 +1,5 @@
 import apiClient from "../api/ClientApi";
-import { removeToken } from '../common/tokenStorage';
+import { removeToken, getRefreshToken, getToken } from '../common/tokenStorage';
 import { IUser } from '../Model/UserModel';
 
 const registerUser = async (user: IUser) => {
@@ -21,9 +21,25 @@ const login = async (email: string, password: string) => {
     return apiClient.post("/auth/login", data);
 };
 
+
+
 const logout = async () => {
-    return removeToken();
+    try {
+        const token = await getToken();
+        if (token) {
+            await apiClient.get('/auth/logout', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            await removeToken();
+        }
+    } catch (err) {
+        console.log("Logout fail " + err);
+        throw err; // Rethrow the error to handle it in UserModel
+    }
 };
+
 
 const check = async () => {
     return apiClient.get("/post");
