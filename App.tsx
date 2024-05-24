@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import AddNewPost from './Components/AddNewPost';
 import Register from './Components/Register';
 import Login from './Components/Login';
-import Home from './Components/Home';
+import Home from './Components/Settings';
 import Start from './Components/Start';
 import Profile from './Components/Profile';
 import PostListPage from './Components/PostListPage';
@@ -16,19 +16,21 @@ import { getToken } from './common/tokenStorage';
 import clientApi from './api/ClientApi';
 import LoadingScreen from './LoadingScreen';
 import EditPostScreen from './Components/EditPostScreen';
+import {
+  GoogleSignin,
+} from '@react-native-google-signin/google-signin';
+import { CLIENT_ID } from './core/config';
 
 
 
 
 
 const Tab = createBottomTabNavigator();
-
-const PostsListStack = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 
 
-type IconName = 'home' | 'home-outline' | 'person-circle' | 'person-circle-outline' | 'folder' | 'folder-outline';
+type IconName = 'home' | 'home-outline' | 'person-circle' | 'person-circle-outline' | 'reader' | 'reader-outline' | 'cog' | 'cog-outline';
 
 const PostsListScreen: FC = () => {
   return (
@@ -40,9 +42,12 @@ const PostsListScreen: FC = () => {
           if (route.name === 'Home') {
             iconName = focused ? 'home' : 'home-outline'; // Use type assertion here if necessary
           } else if (route.name === 'UserPostList') {
-            iconName = focused ? 'folder' : 'folder-outline'; // Use type assertion here if necessary
+            iconName = focused ? 'reader' : 'reader-outline'; // Use type assertion here if necessary
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person-circle' : 'person-circle-outline'; // Use type assertion here if necessary
+          }
+          else if (route.name === 'Settings') {
+            iconName = focused ? 'cog' : 'cog-outline'; // Use type assertion here if necessary
           } else {
             iconName = 'home'; // Default case, should not typically happen, adjust as necessary
           }
@@ -54,9 +59,9 @@ const PostsListScreen: FC = () => {
       })}
     >
       <Tab.Screen name="Home" component={PostListPage} options={{ title: 'Home' }} />
-      <Tab.Screen name="UserPostList" component={UserPostList} options={{ title: 'My Posts' }} />
+      <Tab.Screen name="UserPostList" component={UserPostList} options={{ title: 'My recipes' }} />
       <Tab.Screen name="Profile" component={Profile} options={{ title: 'Profile', headerShown: false }} />
-      <Tab.Screen name="Home2" component={Home} options={{ title: 'Home' }} />
+      <Tab.Screen name="Settings" component={Home} options={{ title: 'Settings' }} />
     </Tab.Navigator>
   );
 };
@@ -90,6 +95,19 @@ export default function App() {
         if (valid?.data.message === 'Authenticated') {
           console.log('User is authenticated');
           setIsAuthenticated(true);
+          
+          // Check if user is signed in with Google
+          const isSignedInWithGoogle = await GoogleSignin.isSignedIn();
+          if (isSignedInWithGoogle) {
+            // Reconfigure Google Sign-In if necessary
+            console.log('User is signed in with Google, reconfiguring...');
+             GoogleSignin.configure({
+              // Add your Google Sign-In configuration parameters here
+              webClientId: CLIENT_ID,
+              offlineAccess: true,
+              // any other configuration you need
+            });
+          }
         }
       } catch (error) {
         console.error('Error checking token:', error);
@@ -97,10 +115,10 @@ export default function App() {
         setTimeout(() => { setLoading(false); }, 3000);
       }
     };
-    
-
+  
     checkToken();
   }, []);
+  
 
   if (loading) {
     return <LoadingScreen />;  // Show a loading screen or null while checking token

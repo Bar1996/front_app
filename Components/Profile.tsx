@@ -65,8 +65,9 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
 
   const updateUserDetails = async () => {
     try {
-      
+      await UserModel.check();
       const url = await ImageModel.uploadImage(editedImgUrl);
+      console.log("url", url);
       if (url !== user?.imgUrl){
         await UserModel.updateUserDetails(editedName, url);
         setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: url }));

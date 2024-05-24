@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
+import { View, Text, StyleSheet, Animated, Easing, Image } from 'react-native';
+
+
 
 const LoadingScreen = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -54,7 +56,11 @@ const LoadingScreen = () => {
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.logo, { opacity: fadeAnim }]}>
-        <Text style={styles.logoText}>LOGO</Text>
+        <Image
+          source={require('./assets/Logo.png')}
+          style={styles.logoImage}
+          resizeMode="contain"
+        />
       </Animated.View>
       <Text style={styles.text}>Loading...</Text>
       <View style={styles.progressBarContainer}>
@@ -73,17 +79,14 @@ const styles = StyleSheet.create({
   },
   logo: {
     marginBottom: 30,
-    width: 120,
-    height: 120,
-    backgroundColor: '#007BFF',
-    borderRadius: 60,
+    width: 150,
+    height: 150,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  logoText: {
-    color: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
+  logoImage: {
+    width: '100%',
+    height: '100%',
   },
   text: {
     fontSize: 18,
