@@ -1,5 +1,14 @@
 import React, { useState, useEffect, FC } from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity, ActivityIndicator, Modal, TextInput } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  Modal,
+  TextInput,
+} from "react-native";
 import { Button } from "react-native-paper";
 import { theme } from "../core/theme";
 import { IUser } from "../Model/UserModel";
@@ -7,21 +16,21 @@ import UserModel from "../Model/UserModel";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { IconButton } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
-import ImageModel from '../Model/ImageModel';
-
+import ImageModel from "../Model/ImageModel";
 
 const Profile: FC<{ navigation: any }> = ({ navigation }) => {
   const [user, setUser] = useState<IUser | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
-  const [editedName, setEditedName] = useState('');
-  const [editedEmail, setEditedEmail] = useState('');
-  const [editedImgUrl, setEditedImgUrl] = useState('');
-  const [userType, setUserType] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [editedName, setEditedName] = useState("");
+  const [editedEmail, setEditedEmail] = useState("");
+  const [editedImgUrl, setEditedImgUrl] = useState("");
+  const [tempImgUrl, setTempImgUrl] = useState("");
+  const [userType, setUserType] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -29,36 +38,36 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener("focus", () => {
-    const getStudent = async () => {
-      setIsLoading(true);
-      try {
-        const userData = await UserModel.getUserById();
-        setUser(userData);
-        setEditedName(userData.name);
-        setEditedEmail(userData.email);
-        setEditedImgUrl(userData.imgUrl);
-        setUserType(userData.userType);
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }finally {
-        setIsLoading(false);
-      }
-    };
-    getStudent();
-  })
+      const getUser = async () => {
+        setIsLoading(true);
+        try {
+          const userData = await UserModel.getUserById();
+          setUser(userData);
+          setEditedName(userData.name);
+          setEditedEmail(userData.email);
+          setEditedImgUrl(userData.imgUrl);
+          setUserType(userData.userType);
+        } catch (error) {
+          console.error("Failed to fetch user data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      getUser();
+    });
     return () => unsubscribe();
   }, [navigation]);
 
   const openImagePicker = async (type: any) => {
     let pickerResult;
-    if (type === 'camera') {
+    if (type === "camera") {
       pickerResult = await ImagePicker.launchCameraAsync();
     } else {
       pickerResult = await ImagePicker.launchImageLibraryAsync();
     }
 
     if (!pickerResult.canceled && pickerResult.assets) {
-      setEditedImgUrl(pickerResult.assets[0].uri);
+      setTempImgUrl(pickerResult.assets[0].uri);
       setImageModalVisible(false);
     }
   };
@@ -66,30 +75,27 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
   const updateUserDetails = async () => {
     try {
       await UserModel.check();
-      const url = await ImageModel.uploadImage(editedImgUrl);
+      const url = await ImageModel.uploadImage(tempImgUrl || editedImgUrl);
       console.log("url", url);
-      if (url !== user?.imgUrl){
+      if (url !== user?.imgUrl) {
         await UserModel.updateUserDetails(editedName, url);
-        setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: url }));
-        setModalVisible(false);
-      }
-      else{
+        setUser((prevState) => ({
+          ...prevState,
+          name: editedName,
+          email: editedEmail,
+          imgUrl: url,
+        }));
+        setEditedImgUrl(url); // Update the main image URL state
+      } else {
         await UserModel.updateUserDetails(editedName, editedImgUrl);
-        setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: editedImgUrl }));
-        setModalVisible(false);
+        setUser((prevState) => ({
+          ...prevState,
+          name: editedName,
+          email: editedEmail,
+          imgUrl: editedImgUrl,
+        }));
       }
-      
-      // if (url !== editedImgUrl) {
-      //   await UserModel.updateUserDetails(editedName, url);
-      // setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: url }));
-      // setModalVisible(false);
-      // }
-      // else{
-      //   console.log("enter else");
-      //   await UserModel.updateUserDetails(editedName, editedImgUrl);
-      //   setUser(prevState => ({ ...prevState, name: editedName, email: editedEmail, imgUrl: editedImgUrl }));
-    
-      // }
+      setModalVisible(false);
     } catch (error) {
       console.error("Failed to update user details:", error);
     }
@@ -119,14 +125,22 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
 
   const handleToggleCurrentPasswordVisibility = () => {
     setShowCurrentPassword(!showCurrentPassword);
+  };
+
+  if (!user) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
   }
 
   if (!user) {
-    return <View style={styles.loader}><ActivityIndicator size="large" color={theme.colors.primary} /></View>;
-  }
-
-  if (!user) {
-    return <View style={styles.loader}><ActivityIndicator size="large" color={theme.colors.primary} /></View>;
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
   }
 
   return (
@@ -137,31 +151,47 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
-       <View style={styles.centeredView}>
-  <View style={styles.modalView}>
-    <TouchableOpacity onPress={() => setImageModalVisible(true)} style={styles.imageUploadButton}>
-      {editedImgUrl ? (
-        <Image source={{ uri: editedImgUrl }} style={styles.avatar} />
-      ) : (
-        <Image source={require("../assets/avatar.jpeg")} style={styles.avatar} />
-      )}
-      <Text style={styles.uploadText}>Update Image Here</Text>
-    </TouchableOpacity>
-    <TextInput
-      style={styles.input}
-      onChangeText={setEditedName}
-      value={editedName}
-      placeholder="Edit Name"
-    />
-    <View style={styles.emailContainer}>
-      <Text style={styles.label}>Email:</Text>
-      <Text style={styles.emailText}>{user.email}</Text>
-    </View>
-    <Button onPress={() => updateUserDetails()} mode="contained" style={styles.saveButton}>Save</Button>
-    <Button onPress={() => setModalVisible(false)} mode="text">Cancel</Button>
-  </View>
-</View>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <TouchableOpacity
+              onPress={() => setImageModalVisible(true)}
+              style={styles.imageUploadButton}
+            >
+              {tempImgUrl ? (
+                <Image source={{ uri: tempImgUrl }} style={styles.avatar} />
+              ) : editedImgUrl ? (
+                <Image source={{ uri: editedImgUrl }} style={styles.avatar} />
+              ) : (
+                <Image
+                  source={require("../assets/avatar.jpeg")}
+                  style={styles.avatar}
+                />
+              )}
+              <Text style={styles.uploadText}>Update Image Here</Text>
+            </TouchableOpacity>
 
+            <TextInput
+              style={styles.input}
+              onChangeText={setEditedName}
+              value={editedName}
+              placeholder="Edit Name"
+            />
+            <View style={styles.emailContainer}>
+              <Text style={styles.label}>Email:</Text>
+              <Text style={styles.emailText}>{user.email}</Text>
+            </View>
+            <Button
+              onPress={() => updateUserDetails()}
+              mode="contained"
+              style={styles.saveButton}
+            >
+              Save
+            </Button>
+            <Button onPress={() => setModalVisible(false)} mode="text">
+              Cancel
+            </Button>
+          </View>
+        </View>
       </Modal>
 
       <Modal
@@ -172,15 +202,23 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-            <TouchableOpacity onPress={() => openImagePicker('camera')} style={styles.iconRow}>
+            <TouchableOpacity
+              onPress={() => openImagePicker("camera")}
+              style={styles.iconRow}
+            >
               <Ionicons name="camera" size={24} style={styles.icon} />
               <Text style={styles.iconText}>Open Camera</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => openImagePicker('gallery')} style={styles.iconRow}>
+            <TouchableOpacity
+              onPress={() => openImagePicker("gallery")}
+              style={styles.iconRow}
+            >
               <Ionicons name="image" size={24} style={styles.icon} />
               <Text style={styles.iconText}>Open -Gallery</Text>
             </TouchableOpacity>
-            <Button onPress={() => setImageModalVisible(false)} mode="text">Cancel</Button>
+            <Button onPress={() => setImageModalVisible(false)} mode="text">
+              Cancel
+            </Button>
           </View>
         </View>
       </Modal>
@@ -192,111 +230,116 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
-          <View>
-            <TextInput
-              style={styles.input}
-              onChangeText={setCurrentPassword}
-              value={currentPassword}
-              placeholder="Enter your password"
-              secureTextEntry={!showCurrentPassword}
-            />
-             <IconButton
-              icon={showCurrentPassword ? "eye-off" : "eye"}
-              onPress={handleToggleCurrentPasswordVisibility}
-              style={[
-                styles.iconButton,
-                { position: "absolute", right: -10, bottom: 18 },
-              ]}
-            />
+            <View>
+              <TextInput
+                style={styles.input}
+                onChangeText={setCurrentPassword}
+                value={currentPassword}
+                placeholder="Enter your password"
+                secureTextEntry={!showCurrentPassword}
+              />
+              <IconButton
+                icon={showCurrentPassword ? "eye-off" : "eye"}
+                onPress={handleToggleCurrentPasswordVisibility}
+                style={[
+                  styles.iconButton,
+                  { position: "absolute", right: -10, bottom: 18 },
+                ]}
+              />
             </View>
             <View>
-            <TextInput
-              style={styles.input}
-              onChangeText={setNewPassword}
-              value={newPassword}
-              placeholder="Enter new password"
-              secureTextEntry={!showPassword}
-            />
-               <IconButton
-              icon={showPassword ? "eye-off" : "eye"}
-              onPress={handleTogglePasswordVisibility}
-              style={[
-                styles.iconButton,
-                { position: "absolute", right: -10, bottom: 18 },
-              ]}
-            />
+              <TextInput
+                style={styles.input}
+                onChangeText={setNewPassword}
+                value={newPassword}
+                placeholder="Enter new password"
+                secureTextEntry={!showPassword}
+              />
+              <IconButton
+                icon={showPassword ? "eye-off" : "eye"}
+                onPress={handleTogglePasswordVisibility}
+                style={[
+                  styles.iconButton,
+                  { position: "absolute", right: -10, bottom: 18 },
+                ]}
+              />
             </View>
             <View>
-            <TextInput
-              style={styles.input}
-              onChangeText={setConfirmPassword}
-              value={confirmPassword}
-              placeholder="Confirm new password"
-              secureTextEntry={!showConfirmPassword}
-            />
-               <IconButton
-              icon={showConfirmPassword ? "eye-off" : "eye"}
-              onPress={handleToggleConfirmPasswordVisibility}
-              style={[
-                styles.iconButton,
-                { position: "absolute", right: -10, bottom: 18 },
-              ]}
-            />
+              <TextInput
+                style={styles.input}
+                onChangeText={setConfirmPassword}
+                value={confirmPassword}
+                placeholder="Confirm new password"
+                secureTextEntry={!showConfirmPassword}
+              />
+              <IconButton
+                icon={showConfirmPassword ? "eye-off" : "eye"}
+                onPress={handleToggleConfirmPasswordVisibility}
+                style={[
+                  styles.iconButton,
+                  { position: "absolute", right: -10, bottom: 18 },
+                ]}
+              />
             </View>
-            <Button onPress={changePassword} mode="contained" style={styles.saveButton}>Change Password</Button>
-            <Button onPress={() => setPasswordModalVisible(false)} mode="text">Cancel</Button>
+            <Button
+              onPress={changePassword}
+              mode="contained"
+              style={styles.saveButton}
+            >
+              Change Password
+            </Button>
+            <Button onPress={() => setPasswordModalVisible(false)} mode="text">
+              Cancel
+            </Button>
           </View>
         </View>
       </Modal>
 
-
       <View style={styles.profileCard}>
-  {isLoading ? (
-    <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
-  ) : (
-    <>
-      {editedImgUrl ? (
-        <Image source={{ uri: editedImgUrl }} style={styles.avatar} />
-      ) : (
-        <Image source={require("../assets/avatar.jpeg")} style={styles.avatar} />
-      )}
-      <Text style={styles.userName}>{user.name}</Text>
-      <Text style={styles.emailText}>{user.email}</Text>
-     
-      <TouchableOpacity
-        style={styles.editButton}
-        onPress={() => setModalVisible(true)}
-      >
-        <Ionicons name="pencil-outline" size={20} color="white" />
-        <Text style={styles.buttonText}>Edit Profile</Text>
-      </TouchableOpacity>
-      {userType === 'local' && (
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={() => setPasswordModalVisible(true)}
-        >
-          <Ionicons name="key-outline" size={20} color="white" />
-          <Text style={styles.buttonText}>Change Password</Text>
-        </TouchableOpacity>
-      )}
-    </>
-  )}
-</View>
+        {isLoading ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
+        ) : (
+          <>
+            {editedImgUrl ? (
+              <Image source={{ uri: editedImgUrl }} style={styles.avatar} />
+            ) : (
+              <Image
+                source={require("../assets/avatar.jpeg")}
+                style={styles.avatar}
+              />
+            )}
+            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.emailText}>{user.email}</Text>
 
+            <TouchableOpacity
+              style={styles.editButton}
+              onPress={() => setModalVisible(true)}
+            >
+              <Ionicons name="pencil-outline" size={20} color="white" />
+              <Text style={styles.buttonText}>Edit Profile</Text>
+            </TouchableOpacity>
+            {userType === "local" && (
+              <TouchableOpacity
+                style={styles.editButton}
+                onPress={() => setPasswordModalVisible(true)}
+              >
+                <Ionicons name="key-outline" size={20} color="white" />
+                <Text style={styles.buttonText}>Change Password</Text>
+              </TouchableOpacity>
+            )}
+          </>
+        )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-
-
-  
-
   imageUploadButton: {
     backgroundColor: theme.colors.surface,
     padding: 10,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
   },
   uploadText: {
     marginTop: 10,
@@ -315,20 +358,20 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
-      height: 2
+      height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5
+    elevation: 5,
   },
   input: {
-    width: '80%',
+    width: "80%",
     padding: 10,
     marginBottom: 20,
     borderBottomWidth: 2,
   },
   saveButton: {
-    width: '100%',
+    width: "100%",
     marginTop: 20,
   },
   icon: {
@@ -343,12 +386,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   emailContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
   },
   label: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginRight: 10,
   },
   emailText: {
@@ -363,24 +406,24 @@ const styles = StyleSheet.create({
   },
   loader: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   header: {
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "flex-start",
     padding: 16,
   },
   headerText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 10,
   },
   profileCard: {
-    width: '100%',
+    width: "100%",
     alignItems: "flex-start",
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
     marginVertical: 30,
@@ -411,23 +454,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonText: {
     marginLeft: 10,
-    color: 'white',
+    color: "white",
     fontSize: 18,
   },
   backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   iconButton: {
     margin: 0, // Adjust position of icon
   },
 });
-  
-
 
 export default Profile;

@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   ToastAndroid,
+  ScrollView,
 } from "react-native";
 import React, { useState, FC, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
@@ -48,7 +49,6 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
     isNameValid && isPasswordValid && isEmailValid && isConfirmPasswordValid;
   const [isModalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
 
   useEffect(() => {
     if (passwordTouched) {
@@ -113,7 +113,8 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
       const response = await UserModel.registerUser(user);
       if (response?.status === 200) {
         navigation.navigate("Login");
-        ToastAndroid.show("Registration successful", ToastAndroid.TOP);2
+        ToastAndroid.show("Registration successful", ToastAndroid.TOP);
+        2;
       }
     } catch (err: any) {
       console.log("Registration failed " + err);
@@ -166,222 +167,223 @@ const Register: FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   return (
-    <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <View style={styles.container}>
-        <View>
-          <TouchableOpacity onPress={toggleModal}>
-            {imgUri ? (
-              <Image source={{ uri: imgUri }} style={styles.avatar} />
-            ) : (
-              <Image
-                source={require("../assets/avatar.jpeg")}
-                style={styles.avatar}
+    <ScrollView>
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
+        <View style={styles.container}>
+          <View>
+            <TouchableOpacity onPress={toggleModal}>
+              {imgUri ? (
+                <Image source={{ uri: imgUri }} style={styles.avatar} />
+              ) : (
+                <Image
+                  source={require("../assets/avatar.jpeg")}
+                  style={styles.avatar}
+                />
+              )}
+              <Text style={{}}>Upload Image Here</Text>
+            </TouchableOpacity>
+
+            <Modal isVisible={isModalVisible} onBackdropPress={toggleModal}>
+              <View style={styles.modalContent}>
+                <TouchableOpacity onPress={openCamera} style={styles.iconRow}>
+                  <Ionicons name={"camera"} size={20} style={styles.icon} />
+                  <Text style={styles.iconText}>Upload image with Camera</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={openGallery} style={styles.iconRow}>
+                  <Ionicons name={"image"} size={20} style={styles.icon} />
+                  <Text style={styles.iconText}>Upload image with Gallery</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={toggleModal} style={styles.iconRow}>
+                  <Text>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
+          </View>
+          <View>
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => {
+                setName(text);
+                setNameTouched(true);
+              }}
+              value={name}
+              placeholder="Enter your full name"
+            />
+            {nameTouched && nameError ? (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 12,
+                }}
+              >
+                <Ionicons name="close-circle" size={25} color="#b22222" />
+                <Text style={styles.errorText}>{nameError}</Text>
+              </View>
+            ) : null}
+            {isNameValid && (
+              <Ionicons
+                name="checkmark-circle"
+                size={25}
+                color="green"
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 12,
+                }}
               />
             )}
-            <Text style={{}}>Upload Image Here</Text>
-          </TouchableOpacity>
 
-          <Modal isVisible={isModalVisible} onBackdropPress={toggleModal}>
-            <View style={styles.modalContent}>
-              <TouchableOpacity onPress={openCamera} style={styles.iconRow}>
-                <Ionicons name={"camera"} size={20} style={styles.icon} />
-                <Text style={styles.iconText}>Upload image with Camera</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={openGallery} style={styles.iconRow}>
-                <Ionicons name={"image"} size={20} style={styles.icon} />
-                <Text style={styles.iconText}>Upload image with Gallery</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={toggleModal} style={styles.iconRow}>
-                <Text>Cancel</Text>
-              </TouchableOpacity>
-            </View>
-          </Modal>
-        </View>
-        <View>
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => {
-              setName(text);
-              setNameTouched(true);
-            }}
-            value={name}
-            placeholder="Enter your full name"
-          />
-          {nameTouched && nameError ? (
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginLeft: 12,
-              }}
-            >
-              <Ionicons name="close-circle" size={25} color="#b22222" />
-              <Text style={styles.errorText}>{nameError}</Text>
-            </View>
-          ) : null}
-          {isNameValid && (
-            <Ionicons
-              name="checkmark-circle"
-              size={25}
-              color="green"
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginLeft: 12,
-              }}
-            />
-          )}
-
-          <TextInput
-            style={styles.input}
-            onChangeText={(text) => {
-              setEmail(text);
-              setEmailTouched(true);
-            }}
-            value={email}
-            placeholder="Enter your email"
-          />
-          {emailTouched && emailError ? (
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginLeft: 12,
-              }}
-            >
-              <Ionicons name="close-circle" size={25} color="#b22222" />
-              <Text style={styles.errorText}>{emailError}</Text>
-            </View>
-          ) : null}
-          {isEmailValid && (
-            <Ionicons
-              name="checkmark-circle"
-              size={25}
-              color="green"
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginLeft: 12,
-              }}
-            />
-          )}
-
-          <View>
             <TextInput
               style={styles.input}
               onChangeText={(text) => {
-                setPassword(text);
-                setPasswordTouched(true);
+                setEmail(text);
+                setEmailTouched(true);
               }}
-              value={password}
-              secureTextEntry={!showPassword}
-              placeholder="Enter your password"
+              value={email}
+              placeholder="Enter your email"
             />
-            <IconButton
-              icon={showPassword ? "eye-off" : "eye"}
-              onPress={handleTogglePasswordVisibility}
-              style={[
-                styles.iconButton,
-                { position: "absolute", right: 10, bottom: 12 },
-              ]}
-            />
+            {emailTouched && emailError ? (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 12,
+                }}
+              >
+                <Ionicons name="close-circle" size={25} color="#b22222" />
+                <Text style={styles.errorText}>{emailError}</Text>
+              </View>
+            ) : null}
+            {isEmailValid && (
+              <Ionicons
+                name="checkmark-circle"
+                size={25}
+                color="green"
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 12,
+                }}
+              />
+            )}
+
+            <View>
+              <TextInput
+                style={styles.input}
+                onChangeText={(text) => {
+                  setPassword(text);
+                  setPasswordTouched(true);
+                }}
+                value={password}
+                secureTextEntry={!showPassword}
+                placeholder="Enter your password"
+              />
+              <IconButton
+                icon={showPassword ? "eye-off" : "eye"}
+                onPress={handleTogglePasswordVisibility}
+                style={[
+                  styles.iconButton,
+                  { position: "absolute", right: 10, bottom: 12 },
+                ]}
+              />
+            </View>
+
+            {passwordTouched && passwordError ? (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 12,
+                }}
+              >
+                <Ionicons name="close-circle" size={25} color="#b22222" />
+                <Text style={styles.errorText}>{passwordError}</Text>
+              </View>
+            ) : null}
+            {isPasswordValid && (
+              <Ionicons
+                name="checkmark-circle"
+                size={25}
+                color="green"
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 12,
+                }}
+              />
+            )}
+
+            <View>
+              <TextInput
+                style={styles.input}
+                onChangeText={(text) => {
+                  setConfirmPassword(text);
+                  setConfirmPasswordTouched(true);
+                }}
+                value={confirmPassword}
+                secureTextEntry={!showConfirmPassword}
+                placeholder="Confirm your password"
+              />
+              <IconButton
+                icon={showConfirmPassword ? "eye-off" : "eye"}
+                onPress={handleToggleConfirmPasswordVisibility}
+                style={[
+                  styles.iconButton,
+                  { position: "absolute", right: 10, bottom: 12 },
+                ]}
+              />
+            </View>
+            {confirmPasswordTouched && confirmPasswordError ? (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 12,
+                }}
+              >
+                <Ionicons name="close-circle" size={25} color="#b22222" />
+                <Text style={styles.errorText}>{confirmPasswordError}</Text>
+              </View>
+            ) : null}
+            {isConfirmPasswordValid && (
+              <Ionicons
+                name="checkmark-circle"
+                size={25}
+                color="green"
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 12,
+                }}
+              />
+            )}
           </View>
 
-          {passwordTouched && passwordError ? (
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginLeft: 12,
-              }}
-            >
-              <Ionicons name="close-circle" size={25} color="#b22222" />
-              <Text style={styles.errorText}>{passwordError}</Text>
-            </View>
-          ) : null}
-          {isPasswordValid && (
-            <Ionicons
-              name="checkmark-circle"
-              size={25}
-              color="green"
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginLeft: 12,
-              }}
-            />
-          )}
-
-          <View>
-            <TextInput
-              style={styles.input}
-              onChangeText={(text) => {
-                setConfirmPassword(text);
-                setConfirmPasswordTouched(true);
-              }}
-              value={confirmPassword}
-              secureTextEntry={!showConfirmPassword}
-              placeholder="Confirm your password"
-            />
-            <IconButton
-              icon={showConfirmPassword ? "eye-off" : "eye"}
-              onPress={handleToggleConfirmPasswordVisibility}
-              style={[
-                styles.iconButton,
-                { position: "absolute", right: 10, bottom: 12 },
-              ]}
-            />
+          <View style={styles.buttons}>
+            {isLoading ? (
+              <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
+            ) : (
+              <TouchableOpacity
+                style={[styles.button, !isFormValid && { opacity: 0.5 }]} // Optionally adjust style when disabled
+                onPress={isFormValid ? onSave : undefined} // Only allow onSave if the form is valid
+                disabled={!isFormValid} // Disable the button if not valid
+              >
+                <Text style={styles.buttonText}>Sign-up</Text>
+              </TouchableOpacity>
+            )}
           </View>
-          {confirmPasswordTouched && confirmPasswordError ? (
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginLeft: 12,
-              }}
-            >
-              <Ionicons name="close-circle" size={25} color="#b22222" />
-              <Text style={styles.errorText}>{confirmPasswordError}</Text>
-            </View>
-          ) : null}
-          {isConfirmPasswordValid && (
-            <Ionicons
-              name="checkmark-circle"
-              size={25}
-              color="green"
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginLeft: 12,
-              }}
-            />
-          )}
-        </View>
-
-        <View style={styles.buttons}>
-          {isLoading ? (
-            <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
-          ) : (
-            <TouchableOpacity
-              style={[styles.button, !isFormValid && { opacity: 0.5 }]} // Optionally adjust style when disabled
-              onPress={isFormValid ? onSave : undefined} // Only allow onSave if the form is valid
-              disabled={!isFormValid} // Disable the button if not valid
-            >
-              <Text style={styles.buttonText}>Sign-up</Text>
+          <View style={styles.row}>
+            <Text>Already have an account? </Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <Text style={styles.link}>Login</Text>
             </TouchableOpacity>
-          )}
+          </View>
         </View>
-        <View style={styles.row}>
-          <Text>Already have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={styles.link}>Login</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 

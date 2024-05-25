@@ -20,7 +20,10 @@ const Settings: FC<{ navigation: any }> = ({ navigation }) => {
       await UserModel.check();
       await UserModel.logout();
       navigation.navigate("Start");
-      ToastAndroid.show("Goodbye 👋, See you again soon 😊", ToastAndroid.SHORT);
+      ToastAndroid.show(
+        "Goodbye 👋, See you again soon 😊",
+        ToastAndroid.SHORT
+      );
     } catch (err) {
       console.log("Logout failed " + err);
     } finally {

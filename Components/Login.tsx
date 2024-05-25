@@ -60,19 +60,18 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
     console.log("Login Button Pressed");
     try {
       const response = await UserModel.login(email.toLowerCase(), password);
-      if(response?.data.message === "Login successful"){
+      if (response?.data.message === "Login successful") {
         navigation.navigate("PostsListScreen");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
-    }
+      }
     } catch (err: any) {
       console.log("Login failed " + err);
-      const errorMessage = err.response?.data ||
-      err.message ||
-      "An error occurred during Login.";
-    Alert.alert("Login Failed", errorMessage);
-    }finally {
-        setIsLoading(false);
-      }
+      const errorMessage =
+        err.response?.data || err.message || "An error occurred during Login.";
+      Alert.alert("Login Failed", errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -80,9 +79,8 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
   };
 
   return (
-   
     <View style={styles.container}>
-        <Text style={styles.title}>Welcome Back</Text>
+      <Text style={styles.title}>Welcome Back</Text>
       <TextInput
         style={styles.input}
         onChangeText={(text) => {
@@ -135,12 +133,12 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
       ) : null}
 
       <View style={styles.buttons}>
-      {isLoading ? (
-        <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
-      ) : (
-        <TouchableOpacity style={styles.button} onPress={OnLoginPress}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
+        {isLoading ? (
+          <ActivityIndicator size="large" color={theme.colors.primary} /> // Display the loading indicator
+        ) : (
+          <TouchableOpacity style={styles.button} onPress={OnLoginPress}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
         )}
       </View>
       <View style={styles.row}>
@@ -150,69 +148,67 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
         </TouchableOpacity>
       </View>
     </View>
-  
   );
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      paddingHorizontal: 10,
-      width: '100%',
-      alignSelf: 'center',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    title: {
-      fontSize: 21,
-      color: theme.colors.primary,
-      fontWeight: 'bold',
-      paddingVertical: 12,
-    },
-    input: {
-      width: 350,
-      height: 45,
-      margin: 12,
-      borderWidth: 1,
-      padding: 10,
-    },
-    buttons: {
-      flexDirection: "row",
-      marginTop: 20,
-    },
-    button: {
-      width: "50%",
-      marginVertical: 10,
-      paddingVertical: 12,
-      alignItems: "center",
-      backgroundColor: "#007BFF",
-      borderRadius: 20,
-    },
-    buttonText: {
-      fontWeight: "bold",
-      fontSize: 15,
-      lineHeight: 26,
-      color: "#FFFFFF",
-    },
-    errorText: {
-      color: "#b22222",
-      marginLeft: 12,
-    },
-    iconButton: {
-      position: "absolute",
-      right: 10,
-      bottom: 12,
-    },
-    row: {
-      flexDirection: "row",
-      marginTop: 4,
-      justifyContent: "center", // This centers the text and link horizontally if your text is short
-    },
-    link: {
-      fontWeight: "bold",
-      color: theme.colors.primary,
-    },
-  });
-  
+  container: {
+    flex: 1,
+    paddingHorizontal: 10,
+    width: "100%",
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 21,
+    color: theme.colors.primary,
+    fontWeight: "bold",
+    paddingVertical: 12,
+  },
+  input: {
+    width: 350,
+    height: 45,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+  },
+  buttons: {
+    flexDirection: "row",
+    marginTop: 20,
+  },
+  button: {
+    width: "50%",
+    marginVertical: 10,
+    paddingVertical: 12,
+    alignItems: "center",
+    backgroundColor: "#007BFF",
+    borderRadius: 20,
+  },
+  buttonText: {
+    fontWeight: "bold",
+    fontSize: 15,
+    lineHeight: 26,
+    color: "#FFFFFF",
+  },
+  errorText: {
+    color: "#b22222",
+    marginLeft: 12,
+  },
+  iconButton: {
+    position: "absolute",
+    right: 10,
+    bottom: 12,
+  },
+  row: {
+    flexDirection: "row",
+    marginTop: 4,
+    justifyContent: "center", // This centers the text and link horizontally if your text is short
+  },
+  link: {
+    fontWeight: "bold",
+    color: theme.colors.primary,
+  },
+});
 
 export default Login;
