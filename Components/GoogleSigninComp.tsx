@@ -6,27 +6,26 @@ import {
 import React, { useEffect, FC, useState } from "react";
 import {
   View,
-  Text,
-  StyleSheet,
   ToastAndroid,
-  TouchableOpacity,
   ActivityIndicator,
-  Button,
+  StyleSheet
 } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { CLIENT_ID } from "../core/config";
 import UserModel from "../Model/UserModel";
 import { theme } from "../core/theme";
+import { useAuth } from '../AuthContext';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { setIsAuthenticated } = useAuth();
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: CLIENT_ID, // From Google Developer Console
-      offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+      webClientId: CLIENT_ID,
+      offlineAccess: true,
     });
   }, []);
 
@@ -40,10 +39,10 @@ const GoogleSigninComp: FC<{ navigation: any }> = ({ navigation }) => {
       const credentialResponse = userInfo.idToken;
       const response = await UserModel.signInWithGoogle(credentialResponse);
       if (response?.data.message === "Login successful") {
+        setIsAuthenticated(true); // Update authentication state
         navigation.navigate("PostsListScreen");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
       }
-      // You can now use this userInfo object to authenticate the user in your backend
     } catch (error: any) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         console.log("User cancelled the login flow");

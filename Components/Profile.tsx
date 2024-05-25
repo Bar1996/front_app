@@ -75,31 +75,31 @@ const Profile: FC<{ navigation: any }> = ({ navigation }) => {
   const updateUserDetails = async () => {
     try {
       await UserModel.check();
-      const url = await ImageModel.uploadImage(tempImgUrl || editedImgUrl);
-      console.log("url", url);
-      if (url !== user?.imgUrl) {
-        await UserModel.updateUserDetails(editedName, url);
-        setUser((prevState) => ({
-          ...prevState,
-          name: editedName,
-          email: editedEmail,
-          imgUrl: url,
-        }));
-        setEditedImgUrl(url); // Update the main image URL state
-      } else {
-        await UserModel.updateUserDetails(editedName, editedImgUrl);
-        setUser((prevState) => ({
-          ...prevState,
-          name: editedName,
-          email: editedEmail,
-          imgUrl: editedImgUrl,
-        }));
+      let url = editedImgUrl;
+  
+      if (tempImgUrl) {
+        url = await ImageModel.uploadImage(tempImgUrl);
+        console.log("url", url);
       }
+  
+      if (userType === "google" && !tempImgUrl) {
+        url = user?.imgUrl || editedImgUrl;
+      }
+  
+      await UserModel.updateUserDetails(editedName, url);
+      setUser((prevState) => ({
+        ...prevState,
+        name: editedName,
+        email: editedEmail,
+        imgUrl: url,
+      }));
+      setEditedImgUrl(url); // Update the main image URL state
       setModalVisible(false);
     } catch (error) {
       console.error("Failed to update user details:", error);
     }
   };
+  
 
   const changePassword = async () => {
     if (newPassword !== confirmPassword) {

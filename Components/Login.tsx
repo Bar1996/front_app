@@ -13,6 +13,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { IconButton } from "react-native-paper";
 import { theme } from "../core/theme";
 import UserModel from "../Model/UserModel";
+import { useAuth } from "../AuthContext";
 
 const Login: FC<{ navigation: any }> = ({ navigation }) => {
   const [password, setPassword] = useState("");
@@ -23,6 +24,7 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
   const [emailTouched, setEmailTouched] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { setIsAuthenticated } = useAuth();
 
   useEffect(() => {
     if (emailTouched) {
@@ -61,6 +63,7 @@ const Login: FC<{ navigation: any }> = ({ navigation }) => {
     try {
       const response = await UserModel.login(email.toLowerCase(), password);
       if (response?.data.message === "Login successful") {
+        setIsAuthenticated(true);
         navigation.navigate("PostsListScreen");
         ToastAndroid.show("Welcome Back", ToastAndroid.TOP);
       }

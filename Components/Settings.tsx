@@ -9,28 +9,32 @@ import {
 import React, { FC, useState } from "react";
 import { theme } from "../core/theme";
 import UserModel from "../Model/UserModel";
+import { useAuth } from '../AuthContext';
+
 
 const Settings: FC<{ navigation: any }> = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  const onLogoutPress = async () => {
-    console.log("Logout Button Pressed");
-    try {
-      setIsLoading(true);
-      await UserModel.check();
-      await UserModel.logout();
-      navigation.navigate("Start");
-      ToastAndroid.show(
-        "Goodbye 👋, See you again soon 😊",
-        ToastAndroid.SHORT
-      );
-    } catch (err) {
-      console.log("Logout failed " + err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { setIsAuthenticated } = useAuth();
 
+const onLogoutPress = async () => {
+  console.log("Logout Button Pressed");
+  try {
+    setIsLoading(true);
+    await UserModel.check();
+    await UserModel.logout();
+    setIsAuthenticated(false); // Update authentication state
+    navigation.navigate("Start");
+    ToastAndroid.show(
+      "Goodbye 👋, See you again soon 😊",
+      ToastAndroid.SHORT
+    );
+  } catch (err) {
+    console.log("Logout failed " + err);
+  } finally {
+    setIsLoading(false);
+  }
+};
   return (
     <View style={styles.container}>
       {isLoading ? (
